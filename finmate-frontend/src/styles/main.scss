@@ -1,0 +1,39 @@
+@use 'variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: $font-size-base;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-family;
+  color: $color-text;
+  background-color: $color-background;
+  min-height: 100dvh;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background-color: $color-surface;
+  display: flex;
+  flex-direction: column;
+}
+
+// Page padding bottom to avoid bottom nav overlap
+.page {
+  flex: 1;
+  padding: $spacing-lg $spacing-md;
+  padding-bottom: calc($bottom-nav-height + $spacing-lg);
+  overflow-y: auto;
+}

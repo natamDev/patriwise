@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn dependency:tree 2>&1 | grep -E \"\\(vertx|http|cors\\)\" | head -10)",
+      "Bash(sleep 25 && curl -sv -X OPTIONS http://localhost:8080/api/auth/register \\\\\n  -H \"Origin: http://localhost:5174\" \\\\\n  -H \"Access-Control-Request-Method: POST\" \\\\\n  -H \"Access-Control-Request-Headers: content-type\" 2>&1 | grep \"< \")",
+      "Bash(sleep 30 && curl -sv -X OPTIONS http://localhost:8080/api/auth/register \\\\\n  -H \"Origin: http://localhost:5174\" \\\\\n  -H \"Access-Control-Request-Method: POST\" \\\\\n  -H \"Access-Control-Request-Headers: content-type,authorization\" 2>&1 | grep \"< \")",
+      "Bash(lsof -ti:8080 && echo \"UP\" || echo \"DOWN\")",
+      "Bash(curl -sv -X OPTIONS http://localhost:8080/api/auth/register \\\\\n  -H \"Origin: http://localhost:5174\" \\\\\n  -H \"Access-Control-Request-Method: POST\" \\\\\n  -H \"Access-Control-Request-Headers: content-type\" 2>&1 | grep \"< \")",
+      "Bash(mvn quarkus:config-list 2>&1 | grep -i \"cors\" | head -20)",
+      "Bash(xargs -I {} unzip -l {})",
+      "Bash(jar -tf ~/.m2/repository/io/quarkus/quarkus-vertx-http/3.32.3/quarkus-vertx-http-3.32.3.jar 2>/dev/null | grep CORSConfig)",
+      "Bash(sleep 3 && curl -sv -X OPTIONS http://localhost:8080/api/auth/register \\\\\n  -H \"Origin: http://localhost:5174\" \\\\\n  -H \"Access-Control-Request-Method: POST\" \\\\\n  -H \"Access-Control-Request-Headers: content-type\" 2>&1 | grep \"< \")",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/register \\\\\n  -H \"Content-Type: application/json\" \\\\\n  -d '{\"email\":\"test@test.com\",\"password\":\"test1234\"}' 2>&1)",
+      "Bash(curl -sv -X POST http://localhost:8080/api/auth/register \\\\\n  -H \"Content-Type: application/json\" \\\\\n  -d '{\"email\":\"test@test.com\",\"password\":\"test1234\"}' 2>&1 | grep -E \"\\(< HTTP|{\\)\")",
+      "Bash(source ~/.nvm/nvm.sh && nvm use 20.19.0 --silent && npx vue-tsc --noEmit 2>&1)"
+    ]
+  }
+}
