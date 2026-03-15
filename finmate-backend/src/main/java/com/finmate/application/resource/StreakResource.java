@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Path("/api/streak")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Streak", description = "Saving streak")
 @SecurityRequirement(name = "bearerAuth")
 public class StreakResource {

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Path("/api/budget")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Budget", description = "Budget summary")
 @SecurityRequirement(name = "bearerAuth")
 public class BudgetResource {

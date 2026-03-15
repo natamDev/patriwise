@@ -50,7 +50,7 @@ import java.util.UUID;
 @Path("/api/assistant")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Assistant", description = "AI financial assistant")
 @SecurityRequirement(name = "bearerAuth")
 public class AssistantResource {

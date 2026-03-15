@@ -27,6 +27,9 @@ public class UserEntity extends PanacheEntityBase {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false)
+    private String role;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

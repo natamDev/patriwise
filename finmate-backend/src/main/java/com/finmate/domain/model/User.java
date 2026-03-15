@@ -17,5 +17,10 @@ public class User {
     private UUID id;
     private String email;
     private String passwordHash;
+    private Role role;
     private LocalDateTime createdAt;
+
+    public enum Role {
+        USER, ADMIN
+    }
 }

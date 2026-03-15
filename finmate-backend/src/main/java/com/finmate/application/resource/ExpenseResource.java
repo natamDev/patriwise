@@ -22,7 +22,7 @@ import java.util.UUID;
 @Path("/api/expenses")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Expenses", description = "Expense tracking")
 @SecurityRequirement(name = "bearerAuth")
 public class ExpenseResource {

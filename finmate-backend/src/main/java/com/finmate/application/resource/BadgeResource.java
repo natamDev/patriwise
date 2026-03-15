@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Path("/api/badges")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Badges", description = "Educational badges")
 @SecurityRequirement(name = "bearerAuth")
 public class BadgeResource {

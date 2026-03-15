@@ -23,7 +23,7 @@ import java.util.UUID;
 @Path("/api/profile")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Profile", description = "Financial profile management")
 @SecurityRequirement(name = "bearerAuth")
 public class ProfileResource {

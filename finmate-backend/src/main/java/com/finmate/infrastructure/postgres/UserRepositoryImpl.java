@@ -45,6 +45,7 @@ public class UserRepositoryImpl implements UserRepository {
         entity.setId(user.getId());
         entity.setEmail(user.getEmail());
         entity.setPasswordHash(user.getPasswordHash());
+        entity.setRole(user.getRole() != null ? user.getRole().name() : User.Role.USER.name());
         entity.setCreatedAt(user.getCreatedAt());
         return entity;
     }
@@ -54,6 +55,7 @@ public class UserRepositoryImpl implements UserRepository {
         user.setId(entity.getId());
         user.setEmail(entity.getEmail());
         user.setPasswordHash(entity.getPasswordHash());
+        user.setRole(entity.getRole() != null ? User.Role.valueOf(entity.getRole()) : User.Role.USER);
         user.setCreatedAt(entity.getCreatedAt());
         return user;
     }

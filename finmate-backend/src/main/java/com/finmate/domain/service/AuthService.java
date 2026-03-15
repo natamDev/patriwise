@@ -29,6 +29,7 @@ public class AuthService {
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setRole(User.Role.USER);
         user.setCreatedAt(LocalDateTime.now());
         User saved = repository.save(user);
         return generateToken(saved);
@@ -47,6 +48,7 @@ public class AuthService {
         return Jwt.issuer("finmate")
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
+                .groups(user.getRole().name())
                 .expiresIn(TOKEN_EXPIRY_SECONDS)
                 .sign();
     }

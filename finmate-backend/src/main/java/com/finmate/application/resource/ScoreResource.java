@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Path("/api/score")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Score", description = "Financial health score")
 @SecurityRequirement(name = "bearerAuth")
 public class ScoreResource {

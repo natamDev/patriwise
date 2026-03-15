@@ -17,7 +17,7 @@ import java.util.UUID;
 @Path("/api/quizzes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Quizzes", description = "Financial knowledge quizzes")
 @SecurityRequirement(name = "bearerAuth")
 public class QuizResource {

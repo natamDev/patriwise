@@ -24,7 +24,7 @@ import java.util.UUID;
 @Path("/api/goals")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("**")
+@RolesAllowed("USER")
 @Tag(name = "Goals", description = "Savings goals")
 @SecurityRequirement(name = "bearerAuth")
 public class GoalResource {
