@@ -37,6 +37,47 @@ export interface Recommendation {
   createdAt: string
 }
 
+export interface FinancialAnalysis {
+  analysis: string
+  expenseByCategory: Record<string, number>
+  savingCapacity: number
+  spendingAlerts: string[]
+}
+
+export interface GoalSummary {
+  goalId: string
+  goalName: string
+  goalType: string
+  targetAmount: number
+  savedAmount: number
+  remainingAmount: number
+  percent: number
+  monthsNeeded: number | null
+  estimatedCompletionDate: string | null
+  monthlyContribution: number
+  optimizedContribution: number | null
+}
+
+export interface SavingsCoaching {
+  coaching: string
+  goals: GoalSummary[]
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  HOUSING: 'Logement',
+  TRANSPORT: 'Transport',
+  FOOD: 'Alimentation',
+  SUBSCRIPTIONS: 'Abonnements',
+  ENTERTAINMENT: 'Loisirs',
+  SHOPPING: 'Shopping',
+  HEALTH: 'Santé',
+  OTHER: 'Autres',
+}
+
+export function categoryLabel(cat: string): string {
+  return CATEGORY_LABELS[cat] ?? cat
+}
+
 export const assistantApi = {
   chat(conversationId: string | null, message: string): Promise<ChatResponse> {
     return api
@@ -45,5 +86,11 @@ export const assistantApi = {
   },
   coaching(): Promise<Recommendation> {
     return api.post<Recommendation>('/api/assistant/coaching').then((r) => r.data)
+  },
+  financialAnalysis(): Promise<FinancialAnalysis> {
+    return api.post<FinancialAnalysis>('/api/assistant/financial-analysis').then((r) => r.data)
+  },
+  savingsCoaching(): Promise<SavingsCoaching> {
+    return api.post<SavingsCoaching>('/api/assistant/savings-coaching').then((r) => r.data)
   },
 }

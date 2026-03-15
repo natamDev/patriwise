@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { assistantApi, type ChatMessage, type Recommendation } from '@/api/assistant.api'
+import { assistantApi, categoryLabel, type ChatMessage, type FinancialAnalysis, type GoalSummary, type Recommendation, type SavingsCoaching } from '@/api/assistant.api'
 
 const messages = ref<ChatMessage[]>([
   {
@@ -17,6 +17,12 @@ const inputEl = ref<HTMLTextAreaElement | null>(null)
 const error = ref<string | null>(null)
 const coaching = ref<Recommendation | null>(null)
 const coachingLoading = ref(false)
+const analysis = ref<FinancialAnalysis | null>(null)
+const analysisLoading = ref(false)
+const analysisError = ref<string | null>(null)
+const savingsCoaching = ref<SavingsCoaching | null>(null)
+const savingsLoading = ref(false)
+const savingsError = ref<string | null>(null)
 
 const RECOMMENDATION_LABELS: Record<string, string> = {
   COMPLETE_PROFILE: '👤 Complète ton profil',
@@ -34,6 +40,41 @@ async function loadCoaching() {
   } finally {
     coachingLoading.value = false
   }
+}
+
+async function loadAnalysis() {
+  analysisLoading.value = true
+  analysisError.value = null
+  try {
+    analysis.value = await assistantApi.financialAnalysis()
+  } catch {
+    analysisError.value = 'Impossible de générer l\'analyse. Vérifie ta connexion et réessaie.'
+  } finally {
+    analysisLoading.value = false
+  }
+}
+
+async function loadSavingsCoaching() {
+  savingsLoading.value = true
+  savingsError.value = null
+  try {
+    savingsCoaching.value = await assistantApi.savingsCoaching()
+  } catch {
+    savingsError.value = 'Impossible de générer le coaching. Vérifie ta connexion et réessaie.'
+  } finally {
+    savingsLoading.value = false
+  }
+}
+
+function goalTypeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    TRAVEL: 'Voyage',
+    EMERGENCY_FUND: "Fonds d'urgence",
+    INVESTMENT: 'Investissement',
+    PURCHASE: 'Achat',
+    OTHER: 'Autre',
+  }
+  return labels[type] ?? type
 }
 
 async function send() {
@@ -108,6 +149,122 @@ async function scrollToBottom() {
           <p class="coaching__action-text">{{ coaching.suggestedAction }}</p>
         </div>
         <button class="coaching__refresh" type="button" @click="loadCoaching">
+          Actualiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Analyse financière personnalisée -->
+    <div class="analysis">
+      <div v-if="!analysis" class="analysis__trigger">
+        <p class="analysis__trigger-text">Obtenez une analyse complète de votre situation financière.</p>
+        <p v-if="analysisError" class="analysis__error">{{ analysisError }}</p>
+        <button
+          class="analysis__btn"
+          type="button"
+          :disabled="analysisLoading"
+          @click="loadAnalysis"
+        >
+          {{ analysisLoading ? 'Analyse en cours...' : '📊 Analyser ma situation' }}
+        </button>
+      </div>
+
+      <div v-else class="analysis__card">
+        <p class="analysis__title">📊 Analyse de ta situation financière</p>
+        <p class="analysis__text">{{ analysis.analysis }}</p>
+
+        <div v-if="analysis.spendingAlerts.length" class="analysis__alerts">
+          <p class="analysis__alerts-label">⚠️ Alertes dépenses</p>
+          <ul class="analysis__alerts-list">
+            <li v-for="alert in analysis.spendingAlerts" :key="alert" class="analysis__alert-item">
+              {{ alert }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="Object.keys(analysis.expenseByCategory).length" class="analysis__breakdown">
+          <p class="analysis__breakdown-label">Répartition des dépenses</p>
+          <div
+            v-for="(pct, cat) in analysis.expenseByCategory"
+            :key="cat"
+            class="analysis__breakdown-row"
+          >
+            <span class="analysis__breakdown-cat">{{ categoryLabel(String(cat)) }}</span>
+            <div class="analysis__breakdown-bar">
+              <div class="analysis__breakdown-fill" :style="{ width: Math.min(pct, 100) + '%' }" />
+            </div>
+            <span class="analysis__breakdown-pct">{{ pct }}%</span>
+          </div>
+        </div>
+
+        <div class="analysis__saving">
+          <span class="analysis__saving-label">Capacité d'épargne</span>
+          <span class="analysis__saving-value">{{ analysis.savingCapacity.toFixed(0) }} €/mois</span>
+        </div>
+
+        <button class="analysis__refresh" type="button" @click="loadAnalysis">
+          Actualiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Coaching épargne -->
+    <div class="savings-coaching">
+      <div v-if="!savingsCoaching" class="savings-coaching__trigger">
+        <p class="savings-coaching__trigger-text">Analysez vos objectifs d'épargne et recevez des conseils personnalisés.</p>
+        <p v-if="savingsError" class="savings-coaching__error">{{ savingsError }}</p>
+        <button
+          class="savings-coaching__btn"
+          type="button"
+          :disabled="savingsLoading"
+          @click="loadSavingsCoaching"
+        >
+          {{ savingsLoading ? 'Analyse en cours...' : '🎯 Mon coaching épargne' }}
+        </button>
+      </div>
+
+      <div v-else class="savings-coaching__card">
+        <p class="savings-coaching__title">🎯 Coaching épargne</p>
+        <p class="savings-coaching__text">{{ savingsCoaching.coaching }}</p>
+
+        <div v-if="savingsCoaching.goals.length" class="savings-coaching__goals">
+          <div
+            v-for="goal in savingsCoaching.goals"
+            :key="goal.goalId"
+            class="savings-coaching__goal"
+          >
+            <div class="savings-coaching__goal-header">
+              <span class="savings-coaching__goal-name">{{ goal.goalName }}</span>
+              <span class="savings-coaching__goal-type">{{ goalTypeLabel(goal.goalType) }}</span>
+            </div>
+
+            <div class="savings-coaching__goal-bar">
+              <div
+                class="savings-coaching__goal-fill"
+                :style="{ width: goal.percent + '%' }"
+              />
+            </div>
+
+            <div class="savings-coaching__goal-stats">
+              <span>{{ goal.savedAmount.toFixed(0) }} € / {{ goal.targetAmount.toFixed(0) }} €</span>
+              <span class="savings-coaching__goal-pct">{{ goal.percent }}%</span>
+            </div>
+
+            <div v-if="goal.monthsNeeded" class="savings-coaching__goal-estimate">
+              {{ goal.monthsNeeded }} mois restants
+              <template v-if="goal.estimatedCompletionDate">
+                · {{ new Date(goal.estimatedCompletionDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }}
+              </template>
+            </div>
+
+            <div v-if="goal.optimizedContribution" class="savings-coaching__goal-tip">
+              💡 Pour atteindre ta date cible : <strong>{{ goal.optimizedContribution.toFixed(0) }} €/mois</strong>
+              (actuel : {{ goal.monthlyContribution.toFixed(0) }} €/mois)
+            </div>
+          </div>
+        </div>
+
+        <button class="savings-coaching__refresh" type="button" @click="loadSavingsCoaching">
           Actualiser
         </button>
       </div>
@@ -408,6 +565,326 @@ async function scrollToBottom() {
   &__action-text {
     font-size: $font-size-sm;
     color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__refresh {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 4px $spacing-sm;
+    font-size: 12px;
+    color: $color-text-muted;
+    cursor: pointer;
+  }
+}
+
+.analysis {
+  &__trigger {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__trigger-text {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-left: 3px solid $color-primary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  &__alerts {
+    background-color: #fef2f2;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &__alerts-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-danger;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  &__alerts-list {
+    margin: 0;
+    padding-left: $spacing-md;
+  }
+
+  &__alert-item {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__breakdown-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__breakdown-cat {
+    font-size: $font-size-sm;
+    color: $color-text;
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  &__breakdown-bar {
+    flex: 1;
+    height: 6px;
+    background-color: $color-border;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__breakdown-fill {
+    height: 100%;
+    background-color: $color-primary;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  &__breakdown-pct {
+    font-size: 12px;
+    color: $color-text-muted;
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__saving {
+    background-color: #f0fdf4;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__saving-label {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__saving-value {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-secondary;
+  }
+
+  &__refresh {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 4px $spacing-sm;
+    font-size: 12px;
+    color: $color-text-muted;
+    cursor: pointer;
+  }
+}
+
+.savings-coaching {
+  &__trigger {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__trigger-text {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-secondary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-left: 3px solid $color-secondary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  &__goals {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__goal {
+    background-color: #f8fafc;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__goal-name {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__goal-type {
+    font-size: 11px;
+    color: $color-text-muted;
+    background-color: $color-border;
+    border-radius: $radius-sm;
+    padding: 2px 6px;
+  }
+
+  &__goal-bar {
+    height: 6px;
+    background-color: $color-border;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__goal-fill {
+    height: 100%;
+    background-color: $color-secondary;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  &__goal-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: $color-text-muted;
+  }
+
+  &__goal-pct {
+    font-weight: 600;
+    color: $color-secondary;
+  }
+
+  &__goal-estimate {
+    font-size: 12px;
+    color: $color-text-muted;
+  }
+
+  &__goal-tip {
+    font-size: $font-size-sm;
+    color: $color-text;
+    background-color: #f0fdf4;
+    border-radius: $radius-sm;
+    padding: 4px $spacing-sm;
     line-height: 1.5;
   }
 
