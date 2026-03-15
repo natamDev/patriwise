@@ -53,6 +53,7 @@ async function send() {
       role: 'assistant',
       content: res.reply,
       conceptCard: res.conceptCard ?? undefined,
+      fomoAlert: res.fomoAlert ?? undefined,
     })
   } catch {
     error.value = "Une erreur est survenue. Vérifie ta connexion et réessaie."
@@ -119,6 +120,16 @@ async function scrollToBottom() {
           :class="msg.role === 'user' ? 'assistant__bubble--user' : 'assistant__bubble--bot'"
         >
           <p class="assistant__bubble-text">{{ msg.content }}</p>
+        </div>
+
+        <!-- Alerte FOMO -->
+        <div v-if="msg.fomoAlert" class="fomo-alert">
+          <p class="fomo-alert__title">🚨 Détection FOMO</p>
+          <p class="fomo-alert__explanation">{{ msg.fomoAlert.explanation }}</p>
+          <div class="fomo-alert__alternative">
+            <p class="fomo-alert__alternative-label">Alternative recommandée</p>
+            <p class="fomo-alert__alternative-text">{{ msg.fomoAlert.alternative }}</p>
+          </div>
         </div>
 
         <!-- Carte éducative -->
@@ -409,6 +420,54 @@ async function scrollToBottom() {
     font-size: 12px;
     color: $color-text-muted;
     cursor: pointer;
+  }
+}
+
+.fomo-alert {
+  align-self: flex-start;
+  width: 100%;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-left: 3px solid $color-danger;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-danger;
+  }
+
+  &__explanation {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__alternative {
+    background-color: #f0fdf4;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__alternative-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__alternative-text {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
   }
 }
 

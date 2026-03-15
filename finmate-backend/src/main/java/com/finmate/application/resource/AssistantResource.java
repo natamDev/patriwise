@@ -44,7 +44,7 @@ public class AssistantResource {
         try {
             UUID userId = UUID.fromString(jwt.getSubject());
             AssistantService.ChatResult result = service.chat(userId, dto.getConversationId(), dto.getMessage());
-            return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard())).build();
+            return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert())).build();
         } catch (RuntimeException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(Map.of("error", e.getMessage()))

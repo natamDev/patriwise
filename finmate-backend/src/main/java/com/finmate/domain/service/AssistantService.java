@@ -5,6 +5,7 @@ import com.finmate.domain.model.AssistantMessage;
 import com.finmate.domain.model.ConceptCard;
 import com.finmate.domain.port.AssistantConversationRepository;
 import com.finmate.domain.port.AssistantMessageRepository;
+import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ public class AssistantService {
     private final AssistantMessageRepository messageRepository;
     private final ConceptService conceptService;
     private final CoachingService coachingService;
+    private final FomoDetectionService fomoDetectionService;
     private final HttpClient httpClient;
 
     @ConfigProperty(name = "finmate.ai.provider", defaultValue = "claude")
@@ -66,15 +68,17 @@ public class AssistantService {
             AssistantConversationRepository conversationRepository,
             AssistantMessageRepository messageRepository,
             ConceptService conceptService,
-            CoachingService coachingService) {
+            CoachingService coachingService,
+            FomoDetectionService fomoDetectionService) {
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
         this.conceptService = conceptService;
         this.coachingService = coachingService;
+        this.fomoDetectionService = fomoDetectionService;
         this.httpClient = HttpClient.newHttpClient();
     }
 
-    public record ChatResult(UUID conversationId, String reply, ConceptCard conceptCard) {}
+    public record ChatResult(UUID conversationId, String reply, ConceptCard conceptCard, FomoDetectionService.FomoAlert fomoAlert) {}
 
     public ChatResult chat(UUID userId, UUID conversationId, String userMessage) {
         AssistantConversation conversation;
@@ -112,7 +116,8 @@ public class AssistantService {
         messageRepository.save(assistantMsg);
 
         Optional<ConceptCard> conceptCard = conceptService.detect(userMessage);
-        return new ChatResult(conversation.getId(), reply, conceptCard.orElse(null));
+        Optional<FomoDetectionService.FomoAlert> fomoAlert = fomoDetectionService.detect(userMessage);
+        return new ChatResult(conversation.getId(), reply, conceptCard.orElse(null), fomoAlert.orElse(null));
     }
 
     private AssistantConversation createConversation(UUID userId) {

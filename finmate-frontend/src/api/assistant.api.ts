@@ -4,6 +4,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   conceptCard?: ConceptCard
+  fomoAlert?: FomoAlert
 }
 
 export interface ConceptCard {
@@ -14,10 +15,18 @@ export interface ConceptCard {
   simpleSummary: string
 }
 
+export interface FomoAlert {
+  biasType: string
+  triggerCategory: string
+  explanation: string
+  alternative: string
+}
+
 export interface ChatResponse {
   conversationId: string
   reply: string
   conceptCard: ConceptCard | null
+  fomoAlert: FomoAlert | null
 }
 
 export interface Recommendation {
