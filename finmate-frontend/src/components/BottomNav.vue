@@ -2,11 +2,12 @@
 import { RouterLink } from 'vue-router'
 
 const tabs = [
-  { to: '/',          label: 'Home',      icon: '⊙' },
-  { to: '/budget',    label: 'Budget',    icon: '◫' },
-  { to: '/goals',     label: 'Goals',     icon: '◎' },
-  { to: '/learn',     label: 'Learn',     icon: '◈' },
-  { to: '/assistant', label: 'Assistant', icon: '◉' },
+  { to: '/',           label: 'Home',       icon: '⊙' },
+  { to: '/budget',     label: 'Budget',     icon: '◫' },
+  { to: '/goals',      label: 'Objectifs',  icon: '◎' },
+  { to: '/learn',      label: 'Apprendre',  icon: '◈' },
+  { to: '/projection', label: 'Projection', icon: '◬' },
+  { to: '/assistant',  label: 'Assistant',  icon: '◉' },
 ]
 </script>
 

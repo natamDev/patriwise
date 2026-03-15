@@ -56,7 +56,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="home__card">
+    <RouterLink to="/score" class="home__card home__card--link">
       <p class="home__card-label">Score financier</p>
       <template v-if="score">
         <p class="home__score" :style="{ color: scoreColor(score.label) }">
@@ -68,7 +68,8 @@ onMounted(async () => {
         <p class="home__score">— / 100</p>
         <p class="home__card-hint">Configure ton profil pour voir ton score.</p>
       </template>
-    </div>
+      <span class="home__card-arrow">Voir le détail →</span>
+    </RouterLink>
 
     <div class="home__card">
       <p class="home__card-label">Épargne ce mois</p>
@@ -160,6 +161,19 @@ onMounted(async () => {
     border: 1px solid $color-border;
     border-radius: $radius-lg;
     padding: $spacing-lg;
+
+    &--link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  &__card-arrow {
+    display: block;
+    margin-top: $spacing-xs;
+    font-size: 12px;
+    color: $color-primary;
   }
 
   &__card-label {

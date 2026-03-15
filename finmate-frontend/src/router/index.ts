@@ -12,7 +12,9 @@ const router = createRouter({
     { path: '/budget',    name: 'budget',    component: () => import('@/views/BudgetView.vue') },
     { path: '/goals',     name: 'goals',     component: () => import('@/views/GoalsView.vue') },
     { path: '/learn',     name: 'learn',     component: () => import('@/views/LearnView.vue') },
-    { path: '/assistant', name: 'assistant', component: () => import('@/views/AssistantView.vue') },
+    { path: '/assistant',  name: 'assistant',  component: () => import('@/views/AssistantView.vue') },
+    { path: '/projection', name: 'projection', component: () => import('@/views/ProjectionView.vue') },
+    { path: '/score',      name: 'score',      component: () => import('@/views/ScoreView.vue') },
     { path: '/profile',   name: 'profile',   component: () => import('@/views/ProfileView.vue') },
   ],
 })
