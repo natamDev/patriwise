@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { assistantApi, categoryLabel, type ChatMessage, type FinancialAnalysis, type GoalSummary, type Recommendation, type SavingsCoaching } from '@/api/assistant.api'
+import { assistantApi, categoryLabel, type BiasAlert, type ChatMessage, type DecisionCoaching, type FinancialAnalysis, type FinancialProjection, type GoalSummary, type InvestmentSimulation, type Motivation, type ProjectionScenario, type Recommendation, type SavingsCoaching } from '@/api/assistant.api'
 
 const messages = ref<ChatMessage[]>([
   {
@@ -23,6 +23,32 @@ const analysisError = ref<string | null>(null)
 const savingsCoaching = ref<SavingsCoaching | null>(null)
 const savingsLoading = ref(false)
 const savingsError = ref<string | null>(null)
+const simulation = ref<InvestmentSimulation | null>(null)
+const simulationLoading = ref(false)
+const simulationError = ref<string | null>(null)
+const simMonthly = ref(100)
+const simReturn = ref(7)
+const simHorizon = ref(10)
+const decisionResult = ref<DecisionCoaching | null>(null)
+const decisionLoading = ref(false)
+const decisionError = ref<string | null>(null)
+const projection = ref<FinancialProjection | null>(null)
+const projectionLoading = ref(false)
+const projectionError = ref<string | null>(null)
+const motivation = ref<Motivation | null>(null)
+const motivationLoading = ref(false)
+const motivationError = ref<string | null>(null)
+
+const activeTab = ref<'chat' | 'outils'>('chat')
+const openSection = ref<string | null>(null)
+
+const decisionForm = ref({
+  decisionContext: '',
+  whyInvesting: '',
+  investmentHorizon: 'MEDIUM',
+  riskTolerance: 'MODERATE',
+  financialGoal: '',
+})
 
 const RECOMMENDATION_LABELS: Record<string, string> = {
   COMPLETE_PROFILE: '👤 Complète ton profil',
@@ -31,6 +57,10 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
   START_INVESTING: '📈 Commence à investir',
   CONTRIBUTE_TO_GOALS: '🎯 Alimente tes objectifs',
   WELL_DONE: '🏆 Bien joué !',
+}
+
+function toggleSection(key: string) {
+  openSection.value = openSection.value === key ? null : key
 }
 
 async function loadCoaching() {
@@ -66,6 +96,68 @@ async function loadSavingsCoaching() {
   }
 }
 
+async function runSimulation() {
+  if (simMonthly.value <= 0 || simHorizon.value <= 0) return
+  simulationLoading.value = true
+  simulationError.value = null
+  try {
+    simulation.value = await assistantApi.investmentSimulation(simMonthly.value, simReturn.value, simHorizon.value)
+  } catch {
+    simulationError.value = 'Impossible de lancer la simulation. Réessaie.'
+  } finally {
+    simulationLoading.value = false
+  }
+}
+
+async function loadMotivation() {
+  motivationLoading.value = true
+  motivationError.value = null
+  try {
+    motivation.value = await assistantApi.motivation()
+  } catch {
+    motivationError.value = 'Impossible de générer le message. Réessaie.'
+  } finally {
+    motivationLoading.value = false
+  }
+}
+
+async function loadProjection() {
+  projectionLoading.value = true
+  projectionError.value = null
+  try {
+    projection.value = await assistantApi.financialProjection()
+  } catch {
+    projectionError.value = 'Impossible de générer la projection. Réessaie.'
+  } finally {
+    projectionLoading.value = false
+  }
+}
+
+async function submitDecisionCoaching() {
+  const f = decisionForm.value
+  if (!f.decisionContext.trim() || !f.whyInvesting.trim() || !f.financialGoal.trim()) return
+  decisionLoading.value = true
+  decisionError.value = null
+  try {
+    decisionResult.value = await assistantApi.decisionCoaching(
+      f.decisionContext, f.whyInvesting, f.investmentHorizon, f.riskTolerance, f.financialGoal
+    )
+  } catch {
+    decisionError.value = 'Impossible de générer le coaching. Réessaie.'
+  } finally {
+    decisionLoading.value = false
+  }
+}
+
+function resetDecision() {
+  decisionResult.value = null
+  decisionForm.value = { decisionContext: '', whyInvesting: '', investmentHorizon: 'MEDIUM', riskTolerance: 'MODERATE', financialGoal: '' }
+}
+
+function formatEur(val: number): string {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val)
+}
+
 function goalTypeLabel(type: string): string {
   const labels: Record<string, string> = {
     TRAVEL: 'Voyage',
@@ -95,6 +187,7 @@ async function send() {
       content: res.reply,
       conceptCard: res.conceptCard ?? undefined,
       fomoAlert: res.fomoAlert ?? undefined,
+      biasAlert: res.biasAlert ?? undefined,
     })
   } catch {
     error.value = "Une erreur est survenue. Vérifie ta connexion et réessaie."
@@ -125,226 +218,512 @@ async function scrollToBottom() {
 <template>
   <div class="page assistant">
     <h1 class="assistant__title">Assistant FinMate</h1>
-    <p class="assistant__subtitle">Pose tes questions sur l'investissement et la finance personnelle.</p>
 
-    <!-- Coaching personnalisé -->
-    <div class="coaching">
-      <div v-if="!coaching" class="coaching__trigger">
-        <p class="coaching__trigger-text">Analyse ta situation financière et reçois un conseil personnalisé.</p>
-        <button
-          class="coaching__btn"
-          type="button"
-          :disabled="coachingLoading"
-          @click="loadCoaching"
-        >
-          {{ coachingLoading ? 'Analyse en cours...' : '🔍 Mon coaching personnalisé' }}
-        </button>
-      </div>
-
-      <div v-else class="coaching__card">
-        <p class="coaching__type">{{ RECOMMENDATION_LABELS[coaching.recommendationType] ?? coaching.recommendationType }}</p>
-        <p class="coaching__message">{{ coaching.message }}</p>
-        <div class="coaching__action">
-          <p class="coaching__action-label">Action recommandée</p>
-          <p class="coaching__action-text">{{ coaching.suggestedAction }}</p>
-        </div>
-        <button class="coaching__refresh" type="button" @click="loadCoaching">
-          Actualiser
-        </button>
-      </div>
-    </div>
-
-    <!-- Analyse financière personnalisée -->
-    <div class="analysis">
-      <div v-if="!analysis" class="analysis__trigger">
-        <p class="analysis__trigger-text">Obtenez une analyse complète de votre situation financière.</p>
-        <p v-if="analysisError" class="analysis__error">{{ analysisError }}</p>
-        <button
-          class="analysis__btn"
-          type="button"
-          :disabled="analysisLoading"
-          @click="loadAnalysis"
-        >
-          {{ analysisLoading ? 'Analyse en cours...' : '📊 Analyser ma situation' }}
-        </button>
-      </div>
-
-      <div v-else class="analysis__card">
-        <p class="analysis__title">📊 Analyse de ta situation financière</p>
-        <p class="analysis__text">{{ analysis.analysis }}</p>
-
-        <div v-if="analysis.spendingAlerts.length" class="analysis__alerts">
-          <p class="analysis__alerts-label">⚠️ Alertes dépenses</p>
-          <ul class="analysis__alerts-list">
-            <li v-for="alert in analysis.spendingAlerts" :key="alert" class="analysis__alert-item">
-              {{ alert }}
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="Object.keys(analysis.expenseByCategory).length" class="analysis__breakdown">
-          <p class="analysis__breakdown-label">Répartition des dépenses</p>
-          <div
-            v-for="(pct, cat) in analysis.expenseByCategory"
-            :key="cat"
-            class="analysis__breakdown-row"
-          >
-            <span class="analysis__breakdown-cat">{{ categoryLabel(String(cat)) }}</span>
-            <div class="analysis__breakdown-bar">
-              <div class="analysis__breakdown-fill" :style="{ width: Math.min(pct, 100) + '%' }" />
-            </div>
-            <span class="analysis__breakdown-pct">{{ pct }}%</span>
-          </div>
-        </div>
-
-        <div class="analysis__saving">
-          <span class="analysis__saving-label">Capacité d'épargne</span>
-          <span class="analysis__saving-value">{{ analysis.savingCapacity.toFixed(0) }} €/mois</span>
-        </div>
-
-        <button class="analysis__refresh" type="button" @click="loadAnalysis">
-          Actualiser
-        </button>
-      </div>
-    </div>
-
-    <!-- Coaching épargne -->
-    <div class="savings-coaching">
-      <div v-if="!savingsCoaching" class="savings-coaching__trigger">
-        <p class="savings-coaching__trigger-text">Analysez vos objectifs d'épargne et recevez des conseils personnalisés.</p>
-        <p v-if="savingsError" class="savings-coaching__error">{{ savingsError }}</p>
-        <button
-          class="savings-coaching__btn"
-          type="button"
-          :disabled="savingsLoading"
-          @click="loadSavingsCoaching"
-        >
-          {{ savingsLoading ? 'Analyse en cours...' : '🎯 Mon coaching épargne' }}
-        </button>
-      </div>
-
-      <div v-else class="savings-coaching__card">
-        <p class="savings-coaching__title">🎯 Coaching épargne</p>
-        <p class="savings-coaching__text">{{ savingsCoaching.coaching }}</p>
-
-        <div v-if="savingsCoaching.goals.length" class="savings-coaching__goals">
-          <div
-            v-for="goal in savingsCoaching.goals"
-            :key="goal.goalId"
-            class="savings-coaching__goal"
-          >
-            <div class="savings-coaching__goal-header">
-              <span class="savings-coaching__goal-name">{{ goal.goalName }}</span>
-              <span class="savings-coaching__goal-type">{{ goalTypeLabel(goal.goalType) }}</span>
-            </div>
-
-            <div class="savings-coaching__goal-bar">
-              <div
-                class="savings-coaching__goal-fill"
-                :style="{ width: goal.percent + '%' }"
-              />
-            </div>
-
-            <div class="savings-coaching__goal-stats">
-              <span>{{ goal.savedAmount.toFixed(0) }} € / {{ goal.targetAmount.toFixed(0) }} €</span>
-              <span class="savings-coaching__goal-pct">{{ goal.percent }}%</span>
-            </div>
-
-            <div v-if="goal.monthsNeeded" class="savings-coaching__goal-estimate">
-              {{ goal.monthsNeeded }} mois restants
-              <template v-if="goal.estimatedCompletionDate">
-                · {{ new Date(goal.estimatedCompletionDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }}
-              </template>
-            </div>
-
-            <div v-if="goal.optimizedContribution" class="savings-coaching__goal-tip">
-              💡 Pour atteindre ta date cible : <strong>{{ goal.optimizedContribution.toFixed(0) }} €/mois</strong>
-              (actuel : {{ goal.monthlyContribution.toFixed(0) }} €/mois)
-            </div>
-          </div>
-        </div>
-
-        <button class="savings-coaching__refresh" type="button" @click="loadSavingsCoaching">
-          Actualiser
-        </button>
-      </div>
-    </div>
-
-    <div class="assistant__chat" ref="messagesEl">
-      <template v-for="(msg, i) in messages" :key="i">
-        <div
-          class="assistant__bubble"
-          :class="msg.role === 'user' ? 'assistant__bubble--user' : 'assistant__bubble--bot'"
-        >
-          <p class="assistant__bubble-text">{{ msg.content }}</p>
-        </div>
-
-        <!-- Alerte FOMO -->
-        <div v-if="msg.fomoAlert" class="fomo-alert">
-          <p class="fomo-alert__title">🚨 Détection FOMO</p>
-          <p class="fomo-alert__explanation">{{ msg.fomoAlert.explanation }}</p>
-          <div class="fomo-alert__alternative">
-            <p class="fomo-alert__alternative-label">Alternative recommandée</p>
-            <p class="fomo-alert__alternative-text">{{ msg.fomoAlert.alternative }}</p>
-          </div>
-        </div>
-
-        <!-- Carte éducative -->
-        <div v-if="msg.conceptCard" class="concept-card">
-          <p class="concept-card__name">📚 {{ msg.conceptCard.name }}</p>
-
-          <div class="concept-card__section">
-            <p class="concept-card__label">Définition</p>
-            <p class="concept-card__text">{{ msg.conceptCard.definition }}</p>
-          </div>
-
-          <div class="concept-card__section">
-            <p class="concept-card__label">Exemple concret</p>
-            <div class="concept-card__example">
-              <p class="concept-card__text">{{ msg.conceptCard.example }}</p>
-            </div>
-          </div>
-
-          <div class="concept-card__section">
-            <p class="concept-card__label">Risques</p>
-            <div class="concept-card__risk">
-              <p class="concept-card__text">{{ msg.conceptCard.risk }}</p>
-            </div>
-          </div>
-
-          <div class="concept-card__summary">
-            <p class="concept-card__text">💡 {{ msg.conceptCard.simpleSummary }}</p>
-          </div>
-        </div>
-      </template>
-
-      <div v-if="loading" class="assistant__bubble assistant__bubble--bot">
-        <span class="assistant__typing">
-          <span /><span /><span />
-        </span>
-      </div>
-    </div>
-
-    <div v-if="error" class="assistant__error">{{ error }}</div>
-
-    <div class="assistant__input-row">
-      <textarea
-        ref="inputEl"
-        v-model="input"
-        class="assistant__input"
-        placeholder="Envoie un message..."
-        rows="1"
-        :disabled="loading"
-        @keydown="onKeydown"
-      />
+    <!-- Tab switcher -->
+    <div class="assistant__tabs">
       <button
-        class="assistant__send"
+        class="assistant__tab"
+        :class="{ 'assistant__tab--active': activeTab === 'chat' }"
         type="button"
-        :disabled="!input.trim() || loading"
-        @click="send"
+        @click="activeTab = 'chat'"
       >
-        ➤
+        💬 Chat
       </button>
+      <button
+        class="assistant__tab"
+        :class="{ 'assistant__tab--active': activeTab === 'outils' }"
+        type="button"
+        @click="activeTab = 'outils'"
+      >
+        🛠 Outils
+      </button>
+    </div>
+
+    <!-- Tab Chat -->
+    <div v-show="activeTab === 'chat'" class="assistant__tab-content assistant__tab-content--chat">
+
+      <!-- Chat messages -->
+      <div class="assistant__chat" ref="messagesEl">
+        <template v-for="(msg, i) in messages" :key="i">
+          <div
+            class="assistant__bubble"
+            :class="msg.role === 'user' ? 'assistant__bubble--user' : 'assistant__bubble--bot'"
+          >
+            <p class="assistant__bubble-text">{{ msg.content }}</p>
+          </div>
+
+          <!-- Alerte FOMO -->
+          <div v-if="msg.fomoAlert" class="fomo-alert">
+            <p class="fomo-alert__title">🚨 Détection FOMO</p>
+            <p class="fomo-alert__explanation">{{ msg.fomoAlert.explanation }}</p>
+            <div class="fomo-alert__alternative">
+              <p class="fomo-alert__alternative-label">Alternative recommandée</p>
+              <p class="fomo-alert__alternative-text">{{ msg.fomoAlert.alternative }}</p>
+            </div>
+          </div>
+
+          <!-- Alerte biais comportemental -->
+          <div v-if="msg.biasAlert" class="bias-alert">
+            <p class="bias-alert__title">🧠 {{ msg.biasAlert.biasLabel }} détecté</p>
+            <p class="bias-alert__explanation">{{ msg.biasAlert.explanation }}</p>
+            <div class="bias-alert__alternative">
+              <p class="bias-alert__alternative-label">Approche rationnelle</p>
+              <p class="bias-alert__alternative-text">{{ msg.biasAlert.alternative }}</p>
+            </div>
+          </div>
+
+          <!-- Carte éducative -->
+          <div v-if="msg.conceptCard" class="concept-card">
+            <p class="concept-card__name">📚 {{ msg.conceptCard.name }}</p>
+
+            <div class="concept-card__section">
+              <p class="concept-card__label">Définition</p>
+              <p class="concept-card__text">{{ msg.conceptCard.definition }}</p>
+            </div>
+
+            <div class="concept-card__section">
+              <p class="concept-card__label">Exemple concret</p>
+              <div class="concept-card__example">
+                <p class="concept-card__text">{{ msg.conceptCard.example }}</p>
+              </div>
+            </div>
+
+            <div class="concept-card__section">
+              <p class="concept-card__label">Risques</p>
+              <div class="concept-card__risk">
+                <p class="concept-card__text">{{ msg.conceptCard.risk }}</p>
+              </div>
+            </div>
+
+            <div class="concept-card__summary">
+              <p class="concept-card__text">💡 {{ msg.conceptCard.simpleSummary }}</p>
+            </div>
+          </div>
+        </template>
+
+        <div v-if="loading" class="assistant__bubble assistant__bubble--bot">
+          <span class="assistant__typing">
+            <span /><span /><span />
+          </span>
+        </div>
+      </div>
+
+      <div v-if="error" class="assistant__error">{{ error }}</div>
+
+      <div class="assistant__input-row">
+        <textarea
+          ref="inputEl"
+          v-model="input"
+          class="assistant__input"
+          placeholder="Envoie un message..."
+          rows="1"
+          :disabled="loading"
+          @keydown="onKeydown"
+        />
+        <button
+          class="assistant__send"
+          type="button"
+          :disabled="!input.trim() || loading"
+          @click="send"
+        >
+          ➤
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Outils -->
+    <div v-show="activeTab === 'outils'" class="assistant__tab-content assistant__tab-content--outils">
+
+      <!-- Accordion: Mon profil financier -->
+      <div class="accordion">
+        <button class="accordion__header" type="button" @click="toggleSection('profil')">
+          <span>📊 Mon profil financier</span>
+          <span class="accordion__chevron" :class="{ 'accordion__chevron--open': openSection === 'profil' }">▾</span>
+        </button>
+        <div v-show="openSection === 'profil'" class="accordion__body">
+
+          <!-- Coaching personnalisé -->
+          <div class="coaching">
+            <div v-if="!coaching" class="coaching__trigger">
+              <p class="coaching__trigger-text">Analyse ta situation financière et reçois un conseil personnalisé.</p>
+              <button
+                class="coaching__btn"
+                type="button"
+                :disabled="coachingLoading"
+                @click="loadCoaching"
+              >
+                {{ coachingLoading ? 'Analyse en cours...' : '🔍 Mon coaching personnalisé' }}
+              </button>
+            </div>
+
+            <div v-else class="coaching__card">
+              <p class="coaching__type">{{ RECOMMENDATION_LABELS[coaching.recommendationType] ?? coaching.recommendationType }}</p>
+              <p class="coaching__message">{{ coaching.message }}</p>
+              <div class="coaching__action">
+                <p class="coaching__action-label">Action recommandée</p>
+                <p class="coaching__action-text">{{ coaching.suggestedAction }}</p>
+              </div>
+              <button class="coaching__refresh" type="button" @click="loadCoaching">
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <!-- Analyse financière personnalisée -->
+          <div class="analysis">
+            <div v-if="!analysis" class="analysis__trigger">
+              <p class="analysis__trigger-text">Obtenez une analyse complète de votre situation financière.</p>
+              <p v-if="analysisError" class="analysis__error">{{ analysisError }}</p>
+              <button
+                class="analysis__btn"
+                type="button"
+                :disabled="analysisLoading"
+                @click="loadAnalysis"
+              >
+                {{ analysisLoading ? 'Analyse en cours...' : '📊 Analyser ma situation' }}
+              </button>
+            </div>
+
+            <div v-else class="analysis__card">
+              <p class="analysis__title">📊 Analyse de ta situation financière</p>
+              <p class="analysis__text">{{ analysis.analysis }}</p>
+
+              <div v-if="analysis.spendingAlerts.length" class="analysis__alerts">
+                <p class="analysis__alerts-label">⚠️ Alertes dépenses</p>
+                <ul class="analysis__alerts-list">
+                  <li v-for="alert in analysis.spendingAlerts" :key="alert" class="analysis__alert-item">
+                    {{ alert }}
+                  </li>
+                </ul>
+              </div>
+
+              <div v-if="Object.keys(analysis.expenseByCategory).length" class="analysis__breakdown">
+                <p class="analysis__breakdown-label">Répartition des dépenses</p>
+                <div
+                  v-for="(pct, cat) in analysis.expenseByCategory"
+                  :key="cat"
+                  class="analysis__breakdown-row"
+                >
+                  <span class="analysis__breakdown-cat">{{ categoryLabel(String(cat)) }}</span>
+                  <div class="analysis__breakdown-bar">
+                    <div class="analysis__breakdown-fill" :style="{ width: Math.min(pct, 100) + '%' }" />
+                  </div>
+                  <span class="analysis__breakdown-pct">{{ pct }}%</span>
+                </div>
+              </div>
+
+              <div class="analysis__saving">
+                <span class="analysis__saving-label">Capacité d'épargne</span>
+                <span class="analysis__saving-value">{{ analysis.savingCapacity.toFixed(0) }} €/mois</span>
+              </div>
+
+              <button class="analysis__refresh" type="button" @click="loadAnalysis">
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <!-- Coaching épargne -->
+          <div class="savings-coaching">
+            <div v-if="!savingsCoaching" class="savings-coaching__trigger">
+              <p class="savings-coaching__trigger-text">Analysez vos objectifs d'épargne et recevez des conseils personnalisés.</p>
+              <p v-if="savingsError" class="savings-coaching__error">{{ savingsError }}</p>
+              <button
+                class="savings-coaching__btn"
+                type="button"
+                :disabled="savingsLoading"
+                @click="loadSavingsCoaching"
+              >
+                {{ savingsLoading ? 'Analyse en cours...' : '🎯 Mon coaching épargne' }}
+              </button>
+            </div>
+
+            <div v-else class="savings-coaching__card">
+              <p class="savings-coaching__title">🎯 Coaching épargne</p>
+              <p class="savings-coaching__text">{{ savingsCoaching.coaching }}</p>
+
+              <div v-if="savingsCoaching.goals.length" class="savings-coaching__goals">
+                <div
+                  v-for="goal in savingsCoaching.goals"
+                  :key="goal.goalId"
+                  class="savings-coaching__goal"
+                >
+                  <div class="savings-coaching__goal-header">
+                    <span class="savings-coaching__goal-name">{{ goal.goalName }}</span>
+                    <span class="savings-coaching__goal-type">{{ goalTypeLabel(goal.goalType) }}</span>
+                  </div>
+
+                  <div class="savings-coaching__goal-bar">
+                    <div
+                      class="savings-coaching__goal-fill"
+                      :style="{ width: goal.percent + '%' }"
+                    />
+                  </div>
+
+                  <div class="savings-coaching__goal-stats">
+                    <span>{{ goal.savedAmount.toFixed(0) }} € / {{ goal.targetAmount.toFixed(0) }} €</span>
+                    <span class="savings-coaching__goal-pct">{{ goal.percent }}%</span>
+                  </div>
+
+                  <div v-if="goal.monthsNeeded" class="savings-coaching__goal-estimate">
+                    {{ goal.monthsNeeded }} mois restants
+                    <template v-if="goal.estimatedCompletionDate">
+                      · {{ new Date(goal.estimatedCompletionDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }}
+                    </template>
+                  </div>
+
+                  <div v-if="goal.optimizedContribution" class="savings-coaching__goal-tip">
+                    💡 Pour atteindre ta date cible : <strong>{{ goal.optimizedContribution.toFixed(0) }} €/mois</strong>
+                    (actuel : {{ goal.monthlyContribution.toFixed(0) }} €/mois)
+                  </div>
+                </div>
+              </div>
+
+              <button class="savings-coaching__refresh" type="button" @click="loadSavingsCoaching">
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <!-- Motivation financière -->
+          <div class="motivation">
+            <div v-if="!motivation" class="motivation__trigger">
+              <p class="motivation__trigger-text">Recevez un message d'encouragement basé sur vos progrès financiers.</p>
+              <p v-if="motivationError" class="motivation__error">{{ motivationError }}</p>
+              <button
+                class="motivation__btn"
+                type="button"
+                :disabled="motivationLoading"
+                @click="loadMotivation"
+              >
+                {{ motivationLoading ? 'Génération en cours...' : '💪 Mon encouragement du jour' }}
+              </button>
+            </div>
+
+            <div v-else class="motivation__card">
+              <p class="motivation__title">💪 Ton encouragement du jour</p>
+
+              <div class="motivation__stats">
+                <div class="motivation__stat">
+                  <p class="motivation__stat-value">🔥 {{ motivation.currentStreak }}</p>
+                  <p class="motivation__stat-label">mois de streak</p>
+                </div>
+                <div class="motivation__stat">
+                  <p class="motivation__stat-value">⭐ {{ motivation.financialScore }}/100</p>
+                  <p class="motivation__stat-label">{{ motivation.scoreLabel }}</p>
+                </div>
+                <div v-if="motivation.activeGoals > 0" class="motivation__stat">
+                  <p class="motivation__stat-value">🎯 {{ motivation.averageGoalProgress }}%</p>
+                  <p class="motivation__stat-label">objectifs en cours</p>
+                </div>
+              </div>
+
+              <p class="motivation__message">{{ motivation.message }}</p>
+
+              <button class="motivation__refresh" type="button" @click="loadMotivation">
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <!-- Projections financières personnalisées -->
+          <div class="fp">
+            <div v-if="!projection" class="fp__trigger">
+              <p class="fp__trigger-text">Projetez votre richesse future basée sur vos données réelles (profil + objectifs).</p>
+              <p v-if="projectionError" class="fp__error">{{ projectionError }}</p>
+              <button class="fp__btn" type="button" :disabled="projectionLoading" @click="loadProjection">
+                {{ projectionLoading ? 'Calcul en cours...' : '🔭 Mes projections financières' }}
+              </button>
+            </div>
+
+            <div v-else class="fp__card">
+              <p class="fp__title">🔭 Projections financières personnalisées</p>
+              <p class="fp__meta">
+                {{ formatEur(projection.monthlyInvestment) }}/mois · {{ projection.horizonYears }} ans
+              </p>
+
+              <div class="fp__scenarios">
+                <div
+                  v-for="scenario in [projection.conservative, projection.moderate, projection.optimistic]"
+                  :key="scenario.label"
+                  class="fp__scenario"
+                  :class="`fp__scenario--${scenario.label.toLowerCase()}`"
+                >
+                  <p class="fp__scenario-label">{{ scenario.label }} ({{ scenario.returnPct }}%/an)</p>
+                  <p class="fp__scenario-final">{{ formatEur(scenario.capitalFinal) }}</p>
+                  <p class="fp__scenario-gain">+{{ formatEur(scenario.interestGain) }} d'intérêts</p>
+                  <p class="fp__scenario-invested">{{ formatEur(scenario.capitalInvested) }} investis</p>
+                </div>
+              </div>
+
+              <p class="fp__explanation">{{ projection.explanation }}</p>
+
+              <button class="fp__refresh" type="button" @click="loadProjection">Actualiser</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Accordion: Simuler & Décider -->
+      <div class="accordion">
+        <button class="accordion__header" type="button" @click="toggleSection('simuler')">
+          <span>🔢 Simuler & Décider</span>
+          <span class="accordion__chevron" :class="{ 'accordion__chevron--open': openSection === 'simuler' }">▾</span>
+        </button>
+        <div v-show="openSection === 'simuler'" class="accordion__body">
+
+          <!-- Simulateur d'investissement -->
+          <div class="simulator">
+            <p class="simulator__title">🔢 Simulateur d'investissement</p>
+
+            <div class="simulator__form">
+              <div class="simulator__field">
+                <label class="simulator__label">Investissement mensuel</label>
+                <div class="simulator__input-row">
+                  <input v-model.number="simMonthly" class="simulator__input" type="number" min="1" max="10000" />
+                  <span class="simulator__unit">€/mois</span>
+                </div>
+              </div>
+              <div class="simulator__field">
+                <label class="simulator__label">Rendement annuel estimé</label>
+                <div class="simulator__input-row">
+                  <input v-model.number="simReturn" class="simulator__input" type="number" min="0" max="50" step="0.5" />
+                  <span class="simulator__unit">%/an</span>
+                </div>
+              </div>
+              <div class="simulator__field">
+                <label class="simulator__label">Durée</label>
+                <div class="simulator__input-row">
+                  <input v-model.number="simHorizon" class="simulator__input" type="number" min="1" max="50" />
+                  <span class="simulator__unit">ans</span>
+                </div>
+              </div>
+            </div>
+
+            <p v-if="simulationError" class="simulator__error">{{ simulationError }}</p>
+
+            <button
+              class="simulator__btn"
+              type="button"
+              :disabled="simulationLoading || simMonthly <= 0 || simHorizon <= 0"
+              @click="runSimulation"
+            >
+              {{ simulationLoading ? 'Calcul en cours...' : '▶ Lancer la simulation' }}
+            </button>
+
+            <div v-if="simulation && !simulationLoading" class="simulator__result">
+              <div class="simulator__stats">
+                <div class="simulator__stat">
+                  <p class="simulator__stat-label">Capital investi</p>
+                  <p class="simulator__stat-value">{{ formatEur(simulation.capitalInvested) }}</p>
+                </div>
+                <div class="simulator__stat simulator__stat--gain">
+                  <p class="simulator__stat-label">Capital final</p>
+                  <p class="simulator__stat-value simulator__stat-value--primary">{{ formatEur(simulation.capitalFinal) }}</p>
+                </div>
+                <div class="simulator__stat">
+                  <p class="simulator__stat-label">Intérêts générés</p>
+                  <p class="simulator__stat-value simulator__stat-value--green">+{{ formatEur(simulation.interestGain) }}</p>
+                </div>
+              </div>
+              <p class="simulator__explanation">{{ simulation.explanation }}</p>
+            </div>
+          </div>
+
+          <!-- Coaching décision -->
+          <div class="decision-coaching">
+            <div v-if="!decisionResult" class="decision-coaching__form-card">
+              <p class="decision-coaching__title">🤔 Coaching avant décision</p>
+              <p class="decision-coaching__subtitle">Prenez le temps de réfléchir avant d'agir.</p>
+
+              <div class="decision-coaching__field">
+                <label class="decision-coaching__label">Quelle décision envisagez-vous ?</label>
+                <textarea
+                  v-model="decisionForm.decisionContext"
+                  class="decision-coaching__textarea"
+                  placeholder="Ex : J'envisage d'investir 5 000 € dans des cryptos..."
+                  rows="2"
+                />
+              </div>
+
+              <div class="decision-coaching__field">
+                <label class="decision-coaching__label">Pourquoi voulez-vous investir ?</label>
+                <textarea
+                  v-model="decisionForm.whyInvesting"
+                  class="decision-coaching__textarea"
+                  placeholder="Ex : Pour préparer ma retraite / J'ai peur de rater une opportunité..."
+                  rows="2"
+                />
+              </div>
+
+              <div class="decision-coaching__field">
+                <label class="decision-coaching__label">Horizon d'investissement</label>
+                <div class="decision-coaching__radio-group">
+                  <label v-for="opt in [
+                    { val: 'SHORT', label: '< 1 an' },
+                    { val: 'MEDIUM', label: '1-5 ans' },
+                    { val: 'LONG', label: '5-10 ans' },
+                    { val: 'VERY_LONG', label: '> 10 ans' },
+                  ]" :key="opt.val" class="decision-coaching__radio">
+                    <input type="radio" v-model="decisionForm.investmentHorizon" :value="opt.val" />
+                    <span>{{ opt.label }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="decision-coaching__field">
+                <label class="decision-coaching__label">Tolérance au risque</label>
+                <div class="decision-coaching__radio-group">
+                  <label v-for="opt in [
+                    { val: 'LOW', label: 'Faible' },
+                    { val: 'MODERATE', label: 'Modérée' },
+                    { val: 'HIGH', label: 'Élevée' },
+                  ]" :key="opt.val" class="decision-coaching__radio">
+                    <input type="radio" v-model="decisionForm.riskTolerance" :value="opt.val" />
+                    <span>{{ opt.label }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="decision-coaching__field">
+                <label class="decision-coaching__label">Quel est votre objectif financier ?</label>
+                <textarea
+                  v-model="decisionForm.financialGoal"
+                  class="decision-coaching__textarea"
+                  placeholder="Ex : Atteindre 50 000 € dans 5 ans pour un apport immobilier..."
+                  rows="2"
+                />
+              </div>
+
+              <p v-if="decisionError" class="decision-coaching__error">{{ decisionError }}</p>
+
+              <button
+                class="decision-coaching__btn"
+                type="button"
+                :disabled="decisionLoading || !decisionForm.decisionContext.trim() || !decisionForm.whyInvesting.trim() || !decisionForm.financialGoal.trim()"
+                @click="submitDecisionCoaching"
+              >
+                {{ decisionLoading ? 'Analyse en cours...' : '🧠 Obtenir mon coaching' }}
+              </button>
+            </div>
+
+            <div v-else class="decision-coaching__result">
+              <p class="decision-coaching__title">🧠 Résultat de votre coaching décision</p>
+              <div class="decision-coaching__context-recap">
+                <p class="decision-coaching__recap-item"><strong>Décision :</strong> {{ decisionResult.decisionContext }}</p>
+                <p class="decision-coaching__recap-item"><strong>Pourquoi :</strong> {{ decisionResult.whyInvesting }}</p>
+              </div>
+              <p class="decision-coaching__recommendation">{{ decisionResult.recommendation }}</p>
+              <button class="decision-coaching__reset" type="button" @click="resetDecision">
+                Nouvelle décision
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -363,10 +742,46 @@ async function scrollToBottom() {
     font-weight: 700;
   }
 
-  &__subtitle {
+  &__tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid $color-border;
+    flex-shrink: 0;
+  }
+
+  &__tab {
+    flex: 1;
+    padding: $spacing-sm $spacing-md;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
     font-size: $font-size-sm;
+    font-weight: 600;
     color: $color-text-muted;
-    margin-top: -$spacing-xs;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+
+    &--active {
+      color: $color-primary;
+      border-bottom-color: $color-primary;
+    }
+  }
+
+  &__tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+    min-height: 0;
+
+    &--chat {
+      overflow: hidden;
+    }
+
+    &--outils {
+      overflow-y: auto;
+    }
   }
 
   &__chat {
@@ -441,6 +856,7 @@ async function scrollToBottom() {
     display: flex;
     gap: $spacing-sm;
     align-items: flex-end;
+    flex-shrink: 0;
   }
 
   &__input {
@@ -486,6 +902,51 @@ async function scrollToBottom() {
       opacity: 0.4;
       cursor: default;
     }
+  }
+}
+
+.accordion {
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-surface;
+    border: none;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+
+  &__chevron {
+    font-size: 16px;
+    color: $color-text-muted;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md $spacing-md;
+    border-top: 1px solid $color-border;
   }
 }
 
@@ -900,6 +1361,515 @@ async function scrollToBottom() {
   }
 }
 
+.simulator {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__form {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__input-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__input {
+    flex: 1;
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background-color: #fff;
+    font-size: $font-size-sm;
+    color: $color-text;
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__unit {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    white-space: nowrap;
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: $spacing-xs;
+  }
+
+  &__stat {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--gain {
+      border-color: $color-primary;
+    }
+  }
+
+  &__stat-label {
+    font-size: 11px;
+    color: $color-text-muted;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__stat-value {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-text;
+
+    &--primary {
+      color: $color-primary;
+    }
+
+    &--green {
+      color: $color-secondary;
+    }
+  }
+
+  &__explanation {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-left: 3px solid $color-primary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+  }
+}
+
+.decision-coaching {
+  &__form-card,
+  &__result {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-left: 3px solid #7c3aed;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin-top: -$spacing-xs;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__textarea {
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background-color: #fff;
+    font-size: $font-size-sm;
+    color: $color-text;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+
+    &:focus {
+      border-color: #7c3aed;
+    }
+  }
+
+  &__radio-group {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  &__radio {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-sm;
+    color: $color-text;
+    cursor: pointer;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__context-recap {
+    background-color: #f5f3ff;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__recap-item {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.4;
+  }
+
+  &__recommendation {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  &__reset {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 4px $spacing-sm;
+    font-size: 12px;
+    color: $color-text-muted;
+    cursor: pointer;
+  }
+}
+
+.fp {
+  &__trigger {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__trigger-text {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-left: 3px solid $color-primary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__meta {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin-top: -$spacing-xs;
+  }
+
+  &__scenarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: $spacing-xs;
+  }
+
+  &__scenario {
+    border-radius: $radius-md;
+    padding: $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid $color-border;
+
+    &--conservateur {
+      background-color: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    &--modéré {
+      background-color: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    &--optimiste {
+      background-color: #fef3c7;
+      border-color: #fcd34d;
+    }
+  }
+
+  &__scenario-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__scenario-final {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__scenario-gain {
+    font-size: 12px;
+    color: $color-secondary;
+    font-weight: 600;
+  }
+
+  &__scenario-invested {
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__explanation {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  &__refresh {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 4px $spacing-sm;
+    font-size: 12px;
+    color: $color-text-muted;
+    cursor: pointer;
+  }
+}
+
+.motivation {
+  &__trigger {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__trigger-text {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-secondary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__card {
+    background-color: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 3px solid $color-secondary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__stat {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #86efac;
+    border-radius: $radius-md;
+    padding: $spacing-sm;
+    text-align: center;
+  }
+
+  &__stat-value {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__stat-label {
+    font-size: 11px;
+    color: $color-text-muted;
+    margin-top: 2px;
+  }
+
+  &__message {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  &__refresh {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid #86efac;
+    border-radius: $radius-md;
+    padding: 4px $spacing-sm;
+    font-size: 12px;
+    color: $color-secondary;
+    cursor: pointer;
+  }
+}
+
 .fomo-alert {
   align-self: flex-start;
   width: 100%;
@@ -916,6 +1886,54 @@ async function scrollToBottom() {
     font-size: $font-size-sm;
     font-weight: 700;
     color: $color-danger;
+  }
+
+  &__explanation {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__alternative {
+    background-color: #f0fdf4;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__alternative-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__alternative-text {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+}
+
+.bias-alert {
+  align-self: flex-start;
+  width: 100%;
+  background-color: #f5f3ff;
+  border: 1px solid #c4b5fd;
+  border-left: 3px solid #7c3aed;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: #7c3aed;
   }
 
   &__explanation {

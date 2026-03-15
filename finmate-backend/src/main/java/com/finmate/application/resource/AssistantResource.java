@@ -4,11 +4,27 @@ import com.finmate.application.dto.AssistantChatDto;
 import com.finmate.application.dto.AssistantRecommendationDto;
 import com.finmate.application.dto.AssistantResponseDto;
 import com.finmate.application.dto.FinancialAnalysisDto;
+import com.finmate.application.dto.InvestmentEducationDto;
+import com.finmate.application.dto.InvestmentEducationRequestDto;
+import com.finmate.application.dto.InvestmentSimulationDto;
+import com.finmate.application.dto.InvestmentSimulationRequestDto;
+import com.finmate.application.dto.DecisionCoachingDto;
+import com.finmate.application.dto.DecisionCoachingRequestDto;
+import com.finmate.application.dto.FinancialProjectionDto;
+import com.finmate.application.dto.MotivationDto;
+import com.finmate.application.dto.RiskEducationDto;
+import com.finmate.application.dto.RiskEducationRequestDto;
 import com.finmate.application.dto.SavingsCoachingDto;
 import com.finmate.domain.model.AssistantRecommendation;
 import com.finmate.domain.service.AssistantService;
 import com.finmate.domain.service.CoachingService;
 import com.finmate.domain.service.FinancialAnalysisService;
+import com.finmate.domain.service.InvestmentEducationService;
+import com.finmate.domain.service.InvestmentSimulatorService;
+import com.finmate.domain.service.DecisionCoachingService;
+import com.finmate.domain.service.FinancialProjectionService;
+import com.finmate.domain.service.MotivationService;
+import com.finmate.domain.service.RiskEducationService;
 import com.finmate.domain.service.SavingsCoachingService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -35,16 +51,34 @@ public class AssistantResource {
     private final CoachingService coachingService;
     private final FinancialAnalysisService financialAnalysisService;
     private final SavingsCoachingService savingsCoachingService;
+    private final InvestmentEducationService investmentEducationService;
+    private final InvestmentSimulatorService investmentSimulatorService;
+    private final RiskEducationService riskEducationService;
+    private final DecisionCoachingService decisionCoachingService;
+    private final FinancialProjectionService financialProjectionService;
+    private final MotivationService motivationService;
     private final JsonWebToken jwt;
 
     public AssistantResource(AssistantService service, CoachingService coachingService,
                              FinancialAnalysisService financialAnalysisService,
                              SavingsCoachingService savingsCoachingService,
+                             InvestmentEducationService investmentEducationService,
+                             InvestmentSimulatorService investmentSimulatorService,
+                             RiskEducationService riskEducationService,
+                             DecisionCoachingService decisionCoachingService,
+                             FinancialProjectionService financialProjectionService,
+                             MotivationService motivationService,
                              JsonWebToken jwt) {
         this.service = service;
         this.coachingService = coachingService;
         this.financialAnalysisService = financialAnalysisService;
         this.savingsCoachingService = savingsCoachingService;
+        this.investmentEducationService = investmentEducationService;
+        this.investmentSimulatorService = investmentSimulatorService;
+        this.riskEducationService = riskEducationService;
+        this.decisionCoachingService = decisionCoachingService;
+        this.financialProjectionService = financialProjectionService;
+        this.motivationService = motivationService;
         this.jwt = jwt;
     }
 
@@ -55,7 +89,7 @@ public class AssistantResource {
         try {
             UUID userId = UUID.fromString(jwt.getSubject());
             AssistantService.ChatResult result = service.chat(userId, dto.getConversationId(), dto.getMessage());
-            return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert())).build();
+            return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert(), result.biasAlert())).build();
         } catch (RuntimeException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(Map.of("error", e.getMessage()))
@@ -71,6 +105,159 @@ public class AssistantResource {
             UUID userId = UUID.fromString(jwt.getSubject());
             AssistantRecommendation rec = coachingService.generateCoaching(userId);
             return Response.ok(toDto(rec)).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/motivation")
+    @Operation(summary = "Generate a personalized motivational message based on financial progress")
+    public Response motivation() {
+        try {
+            UUID userId = UUID.fromString(jwt.getSubject());
+            MotivationService.MotivationResult result = motivationService.motivate(userId);
+            MotivationDto dto = new MotivationDto();
+            dto.setMessage(result.message());
+            dto.setCurrentStreak(result.stats().currentStreak());
+            dto.setLongestStreak(result.stats().longestStreak());
+            dto.setFinancialScore(result.stats().financialScore());
+            dto.setScoreLabel(result.stats().scoreLabel());
+            dto.setAverageGoalProgress(result.stats().averageGoalProgress());
+            dto.setActiveGoals(result.stats().activeGoals());
+            return Response.ok(dto).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/financial-projection")
+    @Operation(summary = "Generate personalized financial projections based on user data")
+    public Response financialProjection() {
+        try {
+            UUID userId = UUID.fromString(jwt.getSubject());
+            FinancialProjectionService.FinancialProjectionResult result = financialProjectionService.project(userId);
+            FinancialProjectionDto dto = new FinancialProjectionDto();
+            dto.setMonthlyInvestment(result.monthlyInvestment());
+            dto.setHorizonYears(result.horizonYears());
+            dto.setCurrency(result.currency());
+            dto.setConservative(toScenarioDto(result.conservative()));
+            dto.setModerate(toScenarioDto(result.moderate()));
+            dto.setOptimistic(toScenarioDto(result.optimistic()));
+            dto.setExplanation(result.explanation());
+            return Response.ok(dto).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    private FinancialProjectionDto.ScenarioDto toScenarioDto(FinancialProjectionService.Scenario s) {
+        FinancialProjectionDto.ScenarioDto dto = new FinancialProjectionDto.ScenarioDto();
+        dto.setLabel(s.label());
+        dto.setReturnPct(s.returnPct());
+        dto.setCapitalInvested(s.capitalInvested());
+        dto.setCapitalFinal(s.capitalFinal());
+        dto.setInterestGain(s.interestGain());
+        return dto;
+    }
+
+    @POST
+    @Path("/decision-coaching")
+    @Operation(summary = "Guide the user through a structured financial decision-making process")
+    public Response decisionCoaching(@Valid DecisionCoachingRequestDto dto) {
+        try {
+            UUID userId = UUID.fromString(jwt.getSubject());
+            DecisionCoachingService.DecisionCoachingResult result = decisionCoachingService.coach(
+                    userId, dto.getDecisionContext(), dto.getWhyInvesting(),
+                    dto.getInvestmentHorizon(), dto.getRiskTolerance(), dto.getFinancialGoal());
+            DecisionCoachingDto out = new DecisionCoachingDto();
+            out.setSessionId(result.sessionId());
+            out.setRecommendation(result.recommendation());
+            out.setDecisionContext(result.decisionContext());
+            out.setWhyInvesting(result.whyInvesting());
+            out.setInvestmentHorizon(result.investmentHorizon());
+            out.setRiskTolerance(result.riskTolerance());
+            out.setFinancialGoal(result.financialGoal());
+            return Response.ok(out).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/risk-education")
+    @Operation(summary = "Generate an educational explanation for a financial risk concept")
+    public Response riskEducation(@Valid RiskEducationRequestDto dto) {
+        try {
+            RiskEducationService.RiskExplanation result = riskEducationService.explain(dto.getTopic());
+            RiskEducationDto out = new RiskEducationDto();
+            out.setTopic(result.topic());
+            out.setTopicLabel(result.topicLabel());
+            out.setDefinition(result.definition());
+            out.setExample(result.example());
+            out.setHistoricalExample(result.historicalExample());
+            out.setHowToReact(result.howToReact());
+            out.setSimpleSummary(result.simpleSummary());
+            out.setKeyPoints(result.keyPoints());
+            return Response.ok(out).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/investment-simulation")
+    @Operation(summary = "Simulate an investment and get an AI-powered explanation")
+    public Response investmentSimulation(@Valid InvestmentSimulationRequestDto dto) {
+        try {
+            InvestmentSimulatorService.SimulationResult result = investmentSimulatorService.simulate(
+                    dto.getMonthlyInvestment(), dto.getExpectedReturn(), dto.getHorizonYears());
+            InvestmentSimulationDto out = new InvestmentSimulationDto();
+            out.setMonthlyInvestment(result.monthlyInvestment());
+            out.setExpectedReturn(result.expectedReturn());
+            out.setHorizonYears(result.horizonYears());
+            out.setCapitalInvested(result.capitalInvested());
+            out.setCapitalFinal(result.capitalFinal());
+            out.setInterestGain(result.interestGain());
+            out.setExplanation(result.explanation());
+            return Response.ok(out).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/investment-education")
+    @Operation(summary = "Generate an educational explanation for an investment concept")
+    public Response investmentEducation(@Valid InvestmentEducationRequestDto dto) {
+        try {
+            InvestmentEducationService.InvestmentExplanation result = investmentEducationService.explain(dto.getTopic());
+            InvestmentEducationDto out = new InvestmentEducationDto();
+            out.setTopic(result.topic());
+            out.setTopicLabel(result.topicLabel());
+            out.setDefinition(result.definition());
+            out.setExample(result.example());
+            out.setRisk(result.risk());
+            out.setSimpleSummary(result.simpleSummary());
+            out.setKeyPoints(result.keyPoints());
+            return Response.ok(out).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
         } catch (RuntimeException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(Map.of("error", e.getMessage()))

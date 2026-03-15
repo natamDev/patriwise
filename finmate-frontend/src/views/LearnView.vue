@@ -12,6 +12,7 @@ import InvestmentPlanCalculator from '@/features/learn/InvestmentPlanCalculator.
 import CompoundInterestChart from '@/features/learn/CompoundInterestChart.vue'
 import MarketCrashChart from '@/features/learn/MarketCrashChart.vue'
 import DiversificationComparisonChart from '@/features/learn/DiversificationComparisonChart.vue'
+import { assistantApi, INVESTMENT_TOPICS, RISK_TOPICS, type InvestmentExplanation, type RiskExplanation } from '@/api/assistant.api'
 
 const activeLesson = ref<Lesson | null>(null)
 const activeBias = ref<CognitiveBias | null>(null)
@@ -22,6 +23,44 @@ const riskLessons = lessons.filter((l) => l.category === 'Gestion du risque')
 
 function toggle(section: 'passive' | 'risk' | 'psychology') {
   openSection.value = openSection.value === section ? null : section
+}
+
+// IA — Éducation investissement
+const education = ref<InvestmentExplanation | null>(null)
+const educationLoading = ref(false)
+const educationError = ref<string | null>(null)
+const activeTopic = ref<string | null>(null)
+
+async function loadEducation(topic: string) {
+  activeTopic.value = topic
+  educationLoading.value = true
+  educationError.value = null
+  try {
+    education.value = await assistantApi.investmentEducation(topic)
+  } catch {
+    educationError.value = "Impossible de charger l'explication. Réessaie."
+  } finally {
+    educationLoading.value = false
+  }
+}
+
+// IA — Éducation risque
+const riskExplanation = ref<RiskExplanation | null>(null)
+const riskLoading = ref(false)
+const riskError = ref<string | null>(null)
+const activeRiskTopic = ref<string | null>(null)
+
+async function loadRiskEducation(topic: string) {
+  activeRiskTopic.value = topic
+  riskLoading.value = true
+  riskError.value = null
+  try {
+    riskExplanation.value = await assistantApi.riskEducation(topic)
+  } catch {
+    riskError.value = "Impossible de charger l'explication. Réessaie."
+  } finally {
+    riskLoading.value = false
+  }
 }
 </script>
 
@@ -97,6 +136,62 @@ function toggle(section: 'passive' | 'risk' | 'psychology') {
             </p>
             <CompoundInterestChart />
           </div>
+
+          <!-- IA — Explication approfondie -->
+          <p class="learn__group-label">✨ Explication IA approfondie</p>
+          <div class="learn__ai-topics">
+            <button
+              v-for="t in INVESTMENT_TOPICS"
+              :key="t.key"
+              class="learn__ai-topic-btn"
+              :class="{ 'learn__ai-topic-btn--active': activeTopic === t.key }"
+              :disabled="educationLoading && activeTopic === t.key"
+              type="button"
+              @click="loadEducation(t.key)"
+            >
+              <span class="learn__ai-topic-label">{{ t.label }}</span>
+              <span class="learn__ai-topic-desc">{{ t.description }}</span>
+            </button>
+          </div>
+
+          <p v-if="educationError" class="learn__ai-error">{{ educationError }}</p>
+          <p v-if="educationLoading" class="learn__ai-loading">Génération en cours...</p>
+
+          <div v-if="education && !educationLoading" class="learn__ai-card">
+            <p class="learn__ai-card-title">📚 {{ education.topicLabel }}</p>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Définition</p>
+              <p class="learn__ai-text">{{ education.definition }}</p>
+            </div>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Exemple concret</p>
+              <div class="learn__ai-example">
+                <p class="learn__ai-text">{{ education.example }}</p>
+              </div>
+            </div>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Risques</p>
+              <div class="learn__ai-risk">
+                <p class="learn__ai-text">{{ education.risk }}</p>
+              </div>
+            </div>
+
+            <div v-if="education.keyPoints.length" class="learn__ai-section">
+              <p class="learn__ai-label">Points clés</p>
+              <ul class="learn__ai-key-points">
+                <li v-for="point in education.keyPoints" :key="point" class="learn__ai-key-point">
+                  {{ point }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="learn__ai-summary">
+              <p class="learn__ai-text">💡 {{ education.simpleSummary }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -147,8 +242,72 @@ function toggle(section: 'passive' | 'risk' | 'psychology') {
             </p>
             <DiversificationComparisonChart />
           </div>
+
+          <!-- IA — Explication approfondie -->
+          <p class="learn__group-label">✨ Explication IA approfondie</p>
+          <div class="learn__ai-topics">
+            <button
+              v-for="t in RISK_TOPICS"
+              :key="t.key"
+              class="learn__ai-topic-btn learn__ai-topic-btn--risk"
+              :class="{ 'learn__ai-topic-btn--risk-active': activeRiskTopic === t.key }"
+              :disabled="riskLoading && activeRiskTopic === t.key"
+              type="button"
+              @click="loadRiskEducation(t.key)"
+            >
+              <span class="learn__ai-topic-label">{{ t.label }}</span>
+              <span class="learn__ai-topic-desc">{{ t.description }}</span>
+            </button>
+          </div>
+
+          <p v-if="riskError" class="learn__ai-error">{{ riskError }}</p>
+          <p v-if="riskLoading" class="learn__ai-loading">Génération en cours...</p>
+
+          <div v-if="riskExplanation && !riskLoading" class="learn__ai-card learn__ai-card--risk">
+            <p class="learn__ai-card-title">⚠️ {{ riskExplanation.topicLabel }}</p>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Définition</p>
+              <p class="learn__ai-text">{{ riskExplanation.definition }}</p>
+            </div>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Exemple concret</p>
+              <div class="learn__ai-example">
+                <p class="learn__ai-text">{{ riskExplanation.example }}</p>
+              </div>
+            </div>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Exemple historique</p>
+              <div class="learn__ai-historical">
+                <p class="learn__ai-text">{{ riskExplanation.historicalExample }}</p>
+              </div>
+            </div>
+
+            <div class="learn__ai-section">
+              <p class="learn__ai-label">Comment réagir ?</p>
+              <div class="learn__ai-reaction">
+                <p class="learn__ai-text">{{ riskExplanation.howToReact }}</p>
+              </div>
+            </div>
+
+            <div v-if="riskExplanation.keyPoints.length" class="learn__ai-section">
+              <p class="learn__ai-label">Points clés</p>
+              <ul class="learn__ai-key-points">
+                <li v-for="point in riskExplanation.keyPoints" :key="point" class="learn__ai-key-point">
+                  {{ point }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="learn__ai-summary">
+              <p class="learn__ai-text">💡 {{ riskExplanation.simpleSummary }}</p>
+            </div>
+          </div>
         </div>
       </div>
+
       <!-- Section 3 — Psychologie & biais -->
       <div class="learn__section">
         <button class="learn__section-header" type="button" @click="toggle('psychology')">
@@ -316,6 +475,155 @@ function toggle(section: 'passive' | 'risk' | 'psychology') {
     font-size: $font-size-sm;
     color: $color-text-muted;
     line-height: 1.5;
+  }
+
+  // ── Blocs IA ──────────────────────────────────────────────────────────────
+
+  &__ai-topics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-xs;
+  }
+
+  &__ai-topic-btn {
+    background-color: $color-background;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $spacing-sm;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+    transition: border-color 0.15s, background-color 0.15s;
+
+    &--active {
+      border-color: $color-primary;
+      background-color: #eff6ff;
+    }
+
+    &--risk {
+      &.learn__ai-topic-btn--risk-active {
+        border-color: $color-danger;
+        background-color: #fef2f2;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  &__ai-topic-label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  &__ai-topic-desc {
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__ai-error {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+
+  &__ai-loading {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    text-align: center;
+    padding: $spacing-sm;
+  }
+
+  &__ai-card {
+    background-color: $color-background;
+    border: 1px solid $color-border;
+    border-left: 3px solid $color-primary;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    &--risk {
+      border-left-color: $color-danger;
+    }
+  }
+
+  &__ai-card-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__ai-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__ai-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__ai-text {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__ai-example {
+    background-color: #fef3c7;
+    border-left: 3px solid #F59E0B;
+    border-radius: 0 $radius-sm $radius-sm 0;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &__ai-risk {
+    background-color: #fef2f2;
+    border-left: 3px solid $color-danger;
+    border-radius: 0 $radius-sm $radius-sm 0;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &__ai-historical {
+    background-color: #f5f3ff;
+    border-left: 3px solid #7c3aed;
+    border-radius: 0 $radius-sm $radius-sm 0;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &__ai-reaction {
+    background-color: #f0fdf4;
+    border-left: 3px solid $color-secondary;
+    border-radius: 0 $radius-sm $radius-sm 0;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &__ai-key-points {
+    margin: 0;
+    padding-left: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__ai-key-point {
+    font-size: $font-size-sm;
+    color: $color-text;
+    line-height: 1.5;
+  }
+
+  &__ai-summary {
+    background-color: #f0fdf4;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
   }
 }
 </style>

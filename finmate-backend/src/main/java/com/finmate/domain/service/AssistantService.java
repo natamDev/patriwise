@@ -47,6 +47,7 @@ public class AssistantService {
     private final ConceptService conceptService;
     private final CoachingService coachingService;
     private final FomoDetectionService fomoDetectionService;
+    private final BiasDetectionService biasDetectionService;
     private final HttpClient httpClient;
 
     @ConfigProperty(name = "finmate.ai.provider", defaultValue = "claude")
@@ -69,16 +70,19 @@ public class AssistantService {
             AssistantMessageRepository messageRepository,
             ConceptService conceptService,
             CoachingService coachingService,
-            FomoDetectionService fomoDetectionService) {
+            FomoDetectionService fomoDetectionService,
+            BiasDetectionService biasDetectionService) {
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
         this.conceptService = conceptService;
         this.coachingService = coachingService;
         this.fomoDetectionService = fomoDetectionService;
+        this.biasDetectionService = biasDetectionService;
         this.httpClient = HttpClient.newHttpClient();
     }
 
-    public record ChatResult(UUID conversationId, String reply, ConceptCard conceptCard, FomoDetectionService.FomoAlert fomoAlert) {}
+    public record ChatResult(UUID conversationId, String reply, ConceptCard conceptCard,
+                             FomoDetectionService.FomoAlert fomoAlert, BiasDetectionService.BiasAlert biasAlert) {}
 
     public ChatResult chat(UUID userId, UUID conversationId, String userMessage) {
         AssistantConversation conversation;
@@ -117,7 +121,9 @@ public class AssistantService {
 
         Optional<ConceptCard> conceptCard = conceptService.detect(userMessage);
         Optional<FomoDetectionService.FomoAlert> fomoAlert = fomoDetectionService.detect(userMessage);
-        return new ChatResult(conversation.getId(), reply, conceptCard.orElse(null), fomoAlert.orElse(null));
+        Optional<BiasDetectionService.BiasAlert> biasAlert = biasDetectionService.detect(userMessage, userId);
+        return new ChatResult(conversation.getId(), reply, conceptCard.orElse(null),
+                fomoAlert.orElse(null), biasAlert.orElse(null));
     }
 
     private AssistantConversation createConversation(UUID userId) {

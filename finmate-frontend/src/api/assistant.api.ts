@@ -1,10 +1,18 @@
 import api from '@/config'
 
+export interface BiasAlert {
+  biasType: string
+  biasLabel: string
+  explanation: string
+  alternative: string
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   conceptCard?: ConceptCard
   fomoAlert?: FomoAlert
+  biasAlert?: BiasAlert
 }
 
 export interface ConceptCard {
@@ -27,6 +35,7 @@ export interface ChatResponse {
   reply: string
   conceptCard: ConceptCard | null
   fomoAlert: FomoAlert | null
+  biasAlert: BiasAlert | null
 }
 
 export interface Recommendation {
@@ -63,6 +72,89 @@ export interface SavingsCoaching {
   goals: GoalSummary[]
 }
 
+export interface InvestmentExplanation {
+  topic: string
+  topicLabel: string
+  definition: string
+  example: string
+  risk: string
+  simpleSummary: string
+  keyPoints: string[]
+}
+
+export interface Motivation {
+  message: string
+  currentStreak: number
+  longestStreak: number
+  financialScore: number
+  scoreLabel: string
+  averageGoalProgress: number
+  activeGoals: number
+}
+
+export interface ProjectionScenario {
+  label: string
+  returnPct: number
+  capitalInvested: number
+  capitalFinal: number
+  interestGain: number
+}
+
+export interface FinancialProjection {
+  monthlyInvestment: number
+  horizonYears: number
+  currency: string
+  conservative: ProjectionScenario
+  moderate: ProjectionScenario
+  optimistic: ProjectionScenario
+  explanation: string
+}
+
+export interface DecisionCoaching {
+  sessionId: string
+  recommendation: string
+  decisionContext: string
+  whyInvesting: string
+  investmentHorizon: string
+  riskTolerance: string
+  financialGoal: string
+}
+
+export interface RiskExplanation {
+  topic: string
+  topicLabel: string
+  definition: string
+  example: string
+  historicalExample: string
+  howToReact: string
+  simpleSummary: string
+  keyPoints: string[]
+}
+
+export const RISK_TOPICS = [
+  { key: 'MARKET_VOLATILITY', label: '📉 Volatilité', description: 'Fluctuations normales' },
+  { key: 'MARKET_CYCLES', label: '🔁 Cycles de marché', description: 'Hauts et bas récurrents' },
+  { key: 'MARKET_CRASHES', label: '💥 Crises boursières', description: 'Effondrements historiques' },
+  { key: 'DIVERSIFICATION', label: '🌍 Diversification', description: 'Réduire le risque' },
+] as const
+
+export interface InvestmentSimulation {
+  monthlyInvestment: number
+  expectedReturn: number
+  horizonYears: number
+  capitalInvested: number
+  capitalFinal: number
+  interestGain: number
+  explanation: string
+}
+
+export const INVESTMENT_TOPICS = [
+  { key: 'ETF', label: '📈 ETF', description: 'Fonds indiciels cotés' },
+  { key: 'DIVERSIFICATION', label: '🌍 Diversification', description: 'Répartir les risques' },
+  { key: 'COMPOUND_INTEREST', label: '🔄 Intérêts composés', description: 'La magie du temps' },
+  { key: 'LONG_TERM_INVESTING', label: '⏳ Long terme', description: 'Investir avec patience' },
+] as const
+
 const CATEGORY_LABELS: Record<string, string> = {
   HOUSING: 'Logement',
   TRANSPORT: 'Transport',
@@ -92,5 +184,30 @@ export const assistantApi = {
   },
   savingsCoaching(): Promise<SavingsCoaching> {
     return api.post<SavingsCoaching>('/api/assistant/savings-coaching').then((r) => r.data)
+  },
+  investmentEducation(topic: string): Promise<InvestmentExplanation> {
+    return api.post<InvestmentExplanation>('/api/assistant/investment-education', { topic }).then((r) => r.data)
+  },
+  motivation(): Promise<Motivation> {
+    return api.post<Motivation>('/api/assistant/motivation').then((r) => r.data)
+  },
+  financialProjection(): Promise<FinancialProjection> {
+    return api.post<FinancialProjection>('/api/assistant/financial-projection').then((r) => r.data)
+  },
+  decisionCoaching(
+    decisionContext: string, whyInvesting: string, investmentHorizon: string,
+    riskTolerance: string, financialGoal: string
+  ): Promise<DecisionCoaching> {
+    return api.post<DecisionCoaching>('/api/assistant/decision-coaching', {
+      decisionContext, whyInvesting, investmentHorizon, riskTolerance, financialGoal,
+    }).then((r) => r.data)
+  },
+  riskEducation(topic: string): Promise<RiskExplanation> {
+    return api.post<RiskExplanation>('/api/assistant/risk-education', { topic }).then((r) => r.data)
+  },
+  investmentSimulation(monthlyInvestment: number, expectedReturn: number, horizonYears: number): Promise<InvestmentSimulation> {
+    return api.post<InvestmentSimulation>('/api/assistant/investment-simulation', {
+      monthlyInvestment, expectedReturn, horizonYears,
+    }).then((r) => r.data)
   },
 }
