@@ -72,15 +72,20 @@ infrastructure/
 
 Implement features in this order, completing each before moving to the next:
 
-1. Financial Profile & Budget Understanding (EPIC 1)
-2. Savings Discipline (EPIC 2)
-3. Passive Investing Education (EPIC 3)
-4. Risk Awareness (EPIC 4)
-5. Behavioral Finance Coaching (EPIC 5)
-6. AI Financial Assistant (EPIC 6)
-7. Financial Projections (EPIC 7)
-8. Gamification (EPIC 8)
-9. AI Financial Coaching Assistant (EPIC 9)
+1. Financial Profile & Budget Understanding (EPIC 1) DONE
+2. Savings Discipline (EPIC 2) DONE
+3. Passive Investing Education (EPIC 3) DONE
+4. Risk Awareness (EPIC 4) DONE
+5. Behavioral Finance Coaching (EPIC 5) DONE
+6. AI Financial Assistant (EPIC 6) DONE
+7. Financial Projections (EPIC 7) DONE
+8. Gamification (EPIC 8) DONE
+9. AI Financial Coaching Assistant (EPIC 9) DONE
+10. Security & Access Control (EPIC 10) WIP
+11. Observality & Monitoring (EPIC 11)
+12. Admin backoffice (EPIC 12)
+13. Plans, Entitlements & Usage Control (EPIC 13)
+14. Billing & Payments with Stripe (EPIC 14)
 
 For each feature, follow this order:
 
