@@ -1,6 +1,7 @@
 package com.finmate.domain.service;
 
 import com.finmate.domain.exception.ConflictException;
+import com.finmate.domain.exception.RateLimitException;
 import com.finmate.domain.exception.UnauthorizedException;
 import com.finmate.domain.model.User;
 import com.finmate.domain.port.UserRepository;
@@ -17,9 +18,11 @@ public class AuthService {
     private static final long TOKEN_EXPIRY_SECONDS = 60 * 60 * 24 * 7L; // 7 days
 
     private final UserRepository repository;
+    private final RateLimitService rateLimitService;
 
-    public AuthService(UserRepository repository) {
+    public AuthService(UserRepository repository, RateLimitService rateLimitService) {
         this.repository = repository;
+        this.rateLimitService = rateLimitService;
     }
 
     public String register(String email, String password) {
@@ -36,11 +39,15 @@ public class AuthService {
     }
 
     public String login(String email, String password) {
+        if (!rateLimitService.allowLoginAttempt(email)) {
+            throw new RateLimitException("Trop de tentatives de connexion. Réessayez dans 15 minutes.");
+        }
         User user = repository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("Email ou mot de passe incorrect."));
         if (!BCrypt.checkpw(password, user.getPasswordHash())) {
             throw new UnauthorizedException("Email ou mot de passe incorrect.");
         }
+        rateLimitService.resetLoginAttempts(email);
         return generateToken(user);
     }
 

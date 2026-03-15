@@ -17,6 +17,7 @@ import com.finmate.application.dto.MotivationDto;
 import com.finmate.application.dto.RiskEducationDto;
 import com.finmate.application.dto.RiskEducationRequestDto;
 import com.finmate.application.dto.SavingsCoachingDto;
+import com.finmate.domain.exception.RateLimitException;
 import com.finmate.domain.exception.ValidationException;
 import com.finmate.domain.model.AssistantRecommendation;
 import com.finmate.domain.service.AssistantService;
@@ -30,6 +31,7 @@ import com.finmate.domain.service.GoalAssistantService;
 import com.finmate.domain.service.FinancialProjectionService;
 import com.finmate.domain.service.MotivationService;
 import com.finmate.domain.service.RiskEducationService;
+import com.finmate.domain.service.RateLimitService;
 import com.finmate.domain.service.SavingsCoachingService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -66,6 +68,7 @@ public class AssistantResource {
     private final FinancialProjectionService financialProjectionService;
     private final MotivationService motivationService;
     private final GoalAssistantService goalAssistantService;
+    private final RateLimitService rateLimitService;
     private final JsonWebToken jwt;
 
     public AssistantResource(AssistantService service, CoachingService coachingService,
@@ -78,6 +81,7 @@ public class AssistantResource {
                              FinancialProjectionService financialProjectionService,
                              MotivationService motivationService,
                              GoalAssistantService goalAssistantService,
+                             RateLimitService rateLimitService,
                              JsonWebToken jwt) {
         this.service = service;
         this.coachingService = coachingService;
@@ -90,13 +94,22 @@ public class AssistantResource {
         this.financialProjectionService = financialProjectionService;
         this.motivationService = motivationService;
         this.goalAssistantService = goalAssistantService;
+        this.rateLimitService = rateLimitService;
         this.jwt = jwt;
+    }
+
+    private void checkAiRateLimit() {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        if (!rateLimitService.allowAiRequest(userId)) {
+            throw new RateLimitException("Trop de requêtes IA. Limite : 20 requêtes par heure.");
+        }
     }
 
     @POST
     @Path("/chat")
     @Operation(summary = "Send a message to the AI assistant")
     public Response chat(@Valid AssistantChatDto dto) {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         AssistantService.ChatResult result = service.chat(userId, dto.getConversationId(), dto.getMessage());
         return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert(), result.biasAlert())).build();
@@ -106,6 +119,7 @@ public class AssistantResource {
     @Path("/coaching")
     @Operation(summary = "Generate a personalized coaching recommendation")
     public Response coaching() {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         AssistantRecommendation rec = coachingService.generateCoaching(userId);
         return Response.ok(toDto(rec)).build();
@@ -115,6 +129,7 @@ public class AssistantResource {
     @Path("/motivation")
     @Operation(summary = "Generate a personalized motivational message based on financial progress")
     public Response motivation() {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         MotivationService.MotivationResult result = motivationService.motivate(userId);
         MotivationDto dto = new MotivationDto();
@@ -132,6 +147,7 @@ public class AssistantResource {
     @Path("/financial-projection")
     @Operation(summary = "Generate personalized financial projections based on user data")
     public Response financialProjection() {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         FinancialProjectionService.FinancialProjectionResult result = financialProjectionService.project(userId);
         FinancialProjectionDto dto = new FinancialProjectionDto();
@@ -159,6 +175,7 @@ public class AssistantResource {
     @Path("/decision-coaching")
     @Operation(summary = "Guide the user through a structured financial decision-making process")
     public Response decisionCoaching(@Valid DecisionCoachingRequestDto dto) {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         DecisionCoachingService.DecisionCoachingResult result = decisionCoachingService.coach(
                 userId, dto.getDecisionContext(), dto.getWhyInvesting(),
@@ -178,6 +195,7 @@ public class AssistantResource {
     @Path("/risk-education")
     @Operation(summary = "Generate an educational explanation for a financial risk concept")
     public Response riskEducation(@Valid RiskEducationRequestDto dto) {
+        checkAiRateLimit();
         RiskEducationService.RiskExplanation result = riskEducationService.explain(dto.getTopic());
         RiskEducationDto out = new RiskEducationDto();
         out.setTopic(result.topic());
@@ -195,6 +213,7 @@ public class AssistantResource {
     @Path("/investment-simulation")
     @Operation(summary = "Simulate an investment and get an AI-powered explanation")
     public Response investmentSimulation(@Valid InvestmentSimulationRequestDto dto) {
+        checkAiRateLimit();
         InvestmentSimulatorService.SimulationResult result = investmentSimulatorService.simulate(
                 dto.getMonthlyInvestment(), dto.getExpectedReturn(), dto.getHorizonYears());
         InvestmentSimulationDto out = new InvestmentSimulationDto();
@@ -212,6 +231,7 @@ public class AssistantResource {
     @Path("/investment-education")
     @Operation(summary = "Generate an educational explanation for an investment concept")
     public Response investmentEducation(@Valid InvestmentEducationRequestDto dto) {
+        checkAiRateLimit();
         InvestmentEducationService.InvestmentExplanation result = investmentEducationService.explain(dto.getTopic());
         InvestmentEducationDto out = new InvestmentEducationDto();
         out.setTopic(result.topic());
@@ -228,6 +248,7 @@ public class AssistantResource {
     @Path("/savings-coaching")
     @Operation(summary = "Generate savings coaching based on goal progress")
     public Response savingsCoaching() {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         SavingsCoachingService.SavingsCoachingResult result = savingsCoachingService.coach(userId);
         SavingsCoachingDto dto = new SavingsCoachingDto();
@@ -254,6 +275,7 @@ public class AssistantResource {
     @Path("/financial-analysis")
     @Operation(summary = "Analyze user financial situation")
     public Response financialAnalysis() {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         FinancialAnalysisService.FinancialAnalysisResult result = financialAnalysisService.analyze(userId);
         FinancialAnalysisDto dto = new FinancialAnalysisDto();
@@ -268,6 +290,7 @@ public class AssistantResource {
     @Path("/goal-assistant")
     @Operation(summary = "Goal creation assistant — conversational flow in 3 steps (INTENT, CLARIFY_RESPONSE, CONFIRM)")
     public Response goalAssistant(@Valid GoalAssistantRequestDto dto) {
+        checkAiRateLimit();
         UUID userId = UUID.fromString(jwt.getSubject());
         GoalAssistantResponseDto out = new GoalAssistantResponseDto();
 
