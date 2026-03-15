@@ -139,6 +139,35 @@ export interface InvestmentSimulation {
   explanation: string
 }
 
+export type GoalAssistantStep = 'INTENT' | 'CLARIFY_RESPONSE' | 'CONFIRM'
+
+export interface GoalAssistantRequest {
+  step: GoalAssistantStep
+  userIntent?: string
+  sessionId?: string
+  userAnswers?: string
+  goalName?: string
+  goalType?: string
+  targetAmount?: number
+  targetDate?: string
+  monthlyContribution?: number
+}
+
+export interface GoalAssistantResponse {
+  sessionId: string
+  step: string
+  clarificationQuestions?: string[]
+  goalName?: string
+  goalType?: string
+  targetAmount?: number
+  targetDate?: string
+  monthlyContribution?: number
+  feasibilityAssessment?: string
+  feasibilityPercent?: number
+  createdGoalId?: string
+  confirmationMessage?: string
+}
+
 export const RISK_TOPICS = [
   { key: 'MARKET_VOLATILITY', label: '📉 Volatilité', description: 'Fluctuations normales' },
   { key: 'MARKET_CYCLES', label: '🔁 Cycles de marché', description: 'Hauts et bas récurrents' },

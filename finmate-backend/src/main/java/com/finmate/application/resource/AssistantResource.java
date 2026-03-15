@@ -11,17 +11,22 @@ import com.finmate.application.dto.InvestmentSimulationRequestDto;
 import com.finmate.application.dto.DecisionCoachingDto;
 import com.finmate.application.dto.DecisionCoachingRequestDto;
 import com.finmate.application.dto.FinancialProjectionDto;
+import com.finmate.application.dto.GoalAssistantRequestDto;
+import com.finmate.application.dto.GoalAssistantResponseDto;
 import com.finmate.application.dto.MotivationDto;
 import com.finmate.application.dto.RiskEducationDto;
 import com.finmate.application.dto.RiskEducationRequestDto;
 import com.finmate.application.dto.SavingsCoachingDto;
+import com.finmate.domain.exception.ValidationException;
 import com.finmate.domain.model.AssistantRecommendation;
 import com.finmate.domain.service.AssistantService;
 import com.finmate.domain.service.CoachingService;
 import com.finmate.domain.service.FinancialAnalysisService;
 import com.finmate.domain.service.InvestmentEducationService;
 import com.finmate.domain.service.InvestmentSimulatorService;
+import com.finmate.domain.model.GoalAssistantSession;
 import com.finmate.domain.service.DecisionCoachingService;
+import com.finmate.domain.service.GoalAssistantService;
 import com.finmate.domain.service.FinancialProjectionService;
 import com.finmate.domain.service.MotivationService;
 import com.finmate.domain.service.RiskEducationService;
@@ -36,6 +41,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/api/assistant")
@@ -56,6 +65,7 @@ public class AssistantResource {
     private final DecisionCoachingService decisionCoachingService;
     private final FinancialProjectionService financialProjectionService;
     private final MotivationService motivationService;
+    private final GoalAssistantService goalAssistantService;
     private final JsonWebToken jwt;
 
     public AssistantResource(AssistantService service, CoachingService coachingService,
@@ -67,6 +77,7 @@ public class AssistantResource {
                              DecisionCoachingService decisionCoachingService,
                              FinancialProjectionService financialProjectionService,
                              MotivationService motivationService,
+                             GoalAssistantService goalAssistantService,
                              JsonWebToken jwt) {
         this.service = service;
         this.coachingService = coachingService;
@@ -78,6 +89,7 @@ public class AssistantResource {
         this.decisionCoachingService = decisionCoachingService;
         this.financialProjectionService = financialProjectionService;
         this.motivationService = motivationService;
+        this.goalAssistantService = goalAssistantService;
         this.jwt = jwt;
     }
 
@@ -250,6 +262,54 @@ public class AssistantResource {
         dto.setSavingCapacity(result.savingCapacity());
         dto.setSpendingAlerts(result.spendingAlerts());
         return Response.ok(dto).build();
+    }
+
+    @POST
+    @Path("/goal-assistant")
+    @Operation(summary = "Goal creation assistant — conversational flow in 3 steps (INTENT, CLARIFY_RESPONSE, CONFIRM)")
+    public Response goalAssistant(@Valid GoalAssistantRequestDto dto) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        GoalAssistantResponseDto out = new GoalAssistantResponseDto();
+
+        switch (dto.getStep().toUpperCase()) {
+            case "INTENT" -> {
+                GoalAssistantSession session = goalAssistantService.analyzeIntent(userId, dto.getUserIntent());
+                out.setSessionId(session.getId().toString());
+                out.setStep("INTENT");
+                List<String> questions = Arrays.stream(session.getClarificationQuestions().split("\n"))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toList();
+                out.setClarificationQuestions(questions);
+            }
+            case "CLARIFY_RESPONSE" -> {
+                GoalAssistantSession session = goalAssistantService.proposeGoal(
+                        userId, UUID.fromString(dto.getSessionId()), dto.getUserAnswers());
+                out.setSessionId(session.getId().toString());
+                out.setStep("CLARIFY_RESPONSE");
+                out.setGoalName(session.getProposedGoalName());
+                out.setGoalType(session.getProposedGoalType() != null ? session.getProposedGoalType().name() : null);
+                out.setTargetAmount(session.getProposedTargetAmount());
+                out.setTargetDate(session.getProposedTargetDate() != null ? session.getProposedTargetDate().toString() : null);
+                out.setMonthlyContribution(session.getProposedMonthlyContribution());
+                out.setFeasibilityAssessment(session.getFeasibilityAssessment());
+                out.setFeasibilityPercent(session.getFeasibilityPercent());
+            }
+            case "CONFIRM" -> {
+                GoalAssistantSession session = goalAssistantService.confirmGoal(
+                        userId, UUID.fromString(dto.getSessionId()),
+                        dto.getGoalName(), dto.getGoalType(),
+                        dto.getTargetAmount(), LocalDate.parse(dto.getTargetDate()),
+                        dto.getMonthlyContribution());
+                out.setSessionId(session.getId().toString());
+                out.setStep("CONFIRM");
+                out.setCreatedGoalId(session.getCreatedGoalId().toString());
+                out.setConfirmationMessage("Objectif \"" + dto.getGoalName() + "\" créé avec succès !");
+            }
+            default -> throw new ValidationException("Step invalide : " + dto.getStep());
+        }
+
+        return Response.ok(out).build();
     }
 
     private AssistantRecommendationDto toDto(AssistantRecommendation r) {

@@ -4,6 +4,8 @@ import type {
   DecisionCoaching,
   FinancialAnalysis,
   FinancialProjection,
+  GoalAssistantRequest,
+  GoalAssistantResponse,
   InvestmentExplanation,
   InvestmentSimulation,
   Motivation,
@@ -51,5 +53,8 @@ export const assistantApi = {
     return api.post<InvestmentSimulation>('/api/assistant/investment-simulation', {
       monthlyInvestment, expectedReturn, horizonYears,
     }).then((r) => r.data)
+  },
+  goalAssistant(request: GoalAssistantRequest): Promise<GoalAssistantResponse> {
+    return api.post<GoalAssistantResponse>('/api/assistant/goal-assistant', request).then((r) => r.data)
   },
 }

@@ -29,6 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Extract repeated strings into variables; do not create variables for values used only once
 
 **Frontend folder structure:**
+
 ```
 src/
   api/           # one file per resource
@@ -79,13 +80,16 @@ Implement features in this order, completing each before moving to the next:
 6. AI Financial Assistant (EPIC 6)
 7. Financial Projections (EPIC 7)
 8. Gamification (EPIC 8)
+9. AI Financial Coaching Assistant (EPIC 9)
 
 For each feature, follow this order:
+
 1. Restate scope → 2. Backend domain model → 3. DTOs → 4. REST resources + OpenAPI → 5. Frontend API layer (`src/api/`) → 6. Vue components + views → 7. Explain decisions → 8. Recap
 
-## AI Assistant (EPIC 6)
+## AI Assistant (EPIC 6 / EPIC 9)
 
 Uses the Claude API. The system prompt must enforce:
+
 - Educational, non-speculative responses
 - Long-term investing philosophy
 - No trading or market timing advice
@@ -94,22 +98,23 @@ Key data models: `assistant_conversations`, `assistant_messages`, `assistant_rec
 
 ## Key Data Models
 
-| Model | Key Fields |
-|---|---|
-| `financial_profiles` | `user_id, monthly_income, employment_status, age, financial_experience_level, currency` |
-| `expenses` | `user_id, amount, category, description, expense_date` |
-| `goals` | `user_id, goal_name, goal_type, target_amount, target_date, monthly_contribution` |
-| `goal_contributions` | `goal_id, amount, contribution_date` |
-| `education_lessons` | `title, content, category` |
-| `financial_scores` | `user_id, score, calculated_at` |
-| `badges` / `user_badges` | `name, description` / `user_id, badge_id, unlocked_at` |
-| `quizzes` / `quiz_results` | `question, options, correct_answer` / `user_id, quiz_id, score` |
+| Model                      | Key Fields                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------------- |
+| `financial_profiles`       | `user_id, monthly_income, employment_status, age, financial_experience_level, currency` |
+| `expenses`                 | `user_id, amount, category, description, expense_date`                                  |
+| `goals`                    | `user_id, goal_name, goal_type, target_amount, target_date, monthly_contribution`       |
+| `goal_contributions`       | `goal_id, amount, contribution_date`                                                    |
+| `education_lessons`        | `title, content, category`                                                              |
+| `financial_scores`         | `user_id, score, calculated_at`                                                         |
+| `badges` / `user_badges`   | `name, description` / `user_id, badge_id, unlocked_at`                                  |
+| `quizzes` / `quiz_results` | `question, options, correct_answer` / `user_id, quiz_id, score`                         |
 
 ## Financial Score Formula
 
 ```
 score = (savings_rate * 50) + (expense_control * 20) + (goal_progress * 20) + (financial_stability * 10)
 ```
+
 Ranges: 0–40 = poor, 40–70 = improving, 70–100 = healthy. Recalculate on every budget or goal change.
 
 ## Compound Interest Formula (used in simulators)

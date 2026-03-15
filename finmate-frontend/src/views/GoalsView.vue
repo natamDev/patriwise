@@ -7,6 +7,7 @@ import type { SavingStreak } from '@/types/streak.types'
 import GoalForm from '@/features/goals/GoalForm.vue'
 import GoalList from '@/features/goals/GoalList.vue'
 import StreakCard from '@/features/goals/StreakCard.vue'
+import GoalAssistantPanel from '@/features/ai-assistant/GoalAssistantPanel.vue'
 
 const goals = ref<Goal[]>([])
 const progress = ref<Record<string, GoalProgress>>({})
@@ -17,6 +18,7 @@ const deleting = ref<string | null>(null)
 const contributing = ref<string | null>(null)
 const error = ref<string | null>(null)
 const showForm = ref(false)
+const showAssistant = ref(false)
 
 async function loadGoals() {
   loading.value = true
@@ -90,6 +92,11 @@ async function handleContribute(id: string, amount: number) {
   }
 }
 
+async function onAssistantGoalCreated() {
+  showAssistant.value = false
+  await loadGoals()
+}
+
 onMounted(loadGoals)
 </script>
 
@@ -101,16 +108,25 @@ onMounted(loadGoals)
 
     <div v-if="error" class="goals__error">{{ error }}</div>
 
-    <button
-      v-if="!showForm"
-      class="goals__add-btn"
-      type="button"
-      @click="showForm = true"
-    >
-      + Nouvel objectif
-    </button>
+    <div v-if="!showForm && !showAssistant" class="goals__actions-row">
+      <button
+        class="goals__add-btn"
+        type="button"
+        @click="showForm = true"
+      >
+        + Nouvel objectif
+      </button>
+      <button
+        class="goals__assistant-btn"
+        type="button"
+        @click="showAssistant = true"
+      >
+        🤖 Créer avec l'assistant
+      </button>
+    </div>
 
     <GoalForm v-if="showForm" :loading="adding" @submit="handleAdd" @cancel="showForm = false" />
+    <GoalAssistantPanel v-if="showAssistant" @goal-created="onAssistantGoalCreated" @cancel="showAssistant = false" />
 
     <div v-if="loading" class="goals__loading">Chargement...</div>
     <GoalList
@@ -146,9 +162,27 @@ onMounted(loadGoals)
     font-size: $font-size-sm;
   }
 
+  &__actions-row {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
   &__add-btn {
+    flex: 1;
     padding: $spacing-sm $spacing-md;
     background-color: $color-primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__assistant-btn {
+    flex: 1;
+    padding: $spacing-sm $spacing-md;
+    background-color: #7c3aed;
     color: #fff;
     border: none;
     border-radius: $radius-md;

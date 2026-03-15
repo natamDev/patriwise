@@ -8,6 +8,7 @@ import MotivationPanel from '@/features/ai-assistant/MotivationPanel.vue'
 import ProjectionPanel from '@/features/ai-assistant/ProjectionPanel.vue'
 import SimulatorPanel from '@/features/ai-assistant/SimulatorPanel.vue'
 import DecisionCoachingPanel from '@/features/ai-assistant/DecisionCoachingPanel.vue'
+import GoalAssistantPanel from '@/features/ai-assistant/GoalAssistantPanel.vue'
 
 const activeTab = ref<'chat' | 'outils'>('chat')
 const openSection = ref<string | null>(null)
@@ -73,6 +74,7 @@ function toggleSection(key: string) {
         <div v-show="openSection === 'simuler'" class="accordion__body">
           <SimulatorPanel />
           <DecisionCoachingPanel />
+          <GoalAssistantPanel />
         </div>
       </div>
 
