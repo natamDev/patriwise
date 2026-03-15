@@ -40,13 +40,9 @@ public class QuizResource {
     @Path("/{id}/answer")
     @Operation(summary = "Submit an answer")
     public Response answer(@PathParam("id") UUID id, Map<String, Integer> body) {
-        try {
-            int selected = body.getOrDefault("selectedOption", -1);
-            QuizService.AnswerResult result = service.answer(currentUserId(), id, selected);
-            return Response.ok(result).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", e.getMessage())).build();
-        }
+        int selected = body.getOrDefault("selectedOption", -1);
+        QuizService.AnswerResult result = service.answer(currentUserId(), id, selected);
+        return Response.ok(result).build();
     }
 
     @GET

@@ -1,5 +1,7 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ConflictException;
+import com.finmate.domain.exception.ResourceNotFoundException;
 import com.finmate.domain.model.FinancialProfile;
 import com.finmate.domain.port.FinancialProfileRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,7 +21,7 @@ public class FinancialProfileService {
 
     public FinancialProfile create(FinancialProfile profile) {
         if (repository.existsByUserId(profile.getUserId())) {
-            throw new IllegalStateException("Un profil financier existe déjà pour cet utilisateur.");
+            throw new ConflictException("Un profil financier existe déjà pour cet utilisateur.");
         }
         profile.setCreatedAt(LocalDateTime.now());
         profile.setUpdatedAt(LocalDateTime.now());
@@ -32,7 +34,7 @@ public class FinancialProfileService {
 
     public FinancialProfile update(UUID userId, FinancialProfile patch) {
         FinancialProfile existing = repository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Profil financier introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Profil financier introuvable."));
 
         if (patch.getMonthlyIncome() != null) existing.setMonthlyIncome(patch.getMonthlyIncome());
         if (patch.getEmploymentStatus() != null) existing.setEmploymentStatus(patch.getEmploymentStatus());

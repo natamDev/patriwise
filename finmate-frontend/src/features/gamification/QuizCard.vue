@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { quizApi, type QuizQuestion, type AnswerResult } from '@/api/quiz.api'
+import { quizApi } from '@/api/quiz.api'
+import type { QuizQuestion, AnswerResult } from '@/types/quiz.types'
 
 const questions = ref<QuizQuestion[]>([])
 const currentIndex = ref(0)

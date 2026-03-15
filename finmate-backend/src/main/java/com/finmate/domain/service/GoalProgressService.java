@@ -1,5 +1,7 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ResourceNotFoundException;
+import com.finmate.domain.exception.ValidationException;
 import com.finmate.domain.model.Goal;
 import com.finmate.domain.model.GoalContribution;
 import com.finmate.domain.port.GoalContributionRepository;
@@ -24,9 +26,9 @@ public class GoalProgressService {
 
     public GoalProgress getProgress(UUID goalId, UUID userId) {
         Goal goal = goalRepository.findById(goalId)
-                .orElseThrow(() -> new IllegalArgumentException("Objectif introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Objectif introuvable."));
         if (!goal.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("Objectif introuvable.");
+            throw new ResourceNotFoundException("Objectif introuvable.");
         }
         BigDecimal saved = contributionRepository.sumByGoalId(goalId);
         return computeProgress(goal, saved);
@@ -34,12 +36,12 @@ public class GoalProgressService {
 
     public GoalContribution addContribution(UUID goalId, UUID userId, BigDecimal amount) {
         Goal goal = goalRepository.findById(goalId)
-                .orElseThrow(() -> new IllegalArgumentException("Objectif introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Objectif introuvable."));
         if (!goal.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("Objectif introuvable.");
+            throw new ResourceNotFoundException("Objectif introuvable.");
         }
         if (amount == null || amount.signum() <= 0) {
-            throw new IllegalArgumentException("Le montant de la contribution doit être supérieur à zéro.");
+            throw new ValidationException("Le montant de la contribution doit être supérieur à zéro.");
         }
         GoalContribution contribution = new GoalContribution();
         contribution.setGoalId(goalId);

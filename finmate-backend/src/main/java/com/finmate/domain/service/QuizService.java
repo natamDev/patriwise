@@ -1,5 +1,6 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ResourceNotFoundException;
 import com.finmate.domain.model.Quiz;
 import com.finmate.domain.model.QuizResult;
 import com.finmate.domain.port.QuizRepository;
@@ -41,7 +42,7 @@ public class QuizService {
 
     public AnswerResult answer(UUID userId, UUID quizId, int selectedOption) {
         Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new IllegalArgumentException("Quiz introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz introuvable."));
 
         boolean correct = selectedOption == quiz.getCorrectAnswer();
 

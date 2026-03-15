@@ -12,7 +12,8 @@ import InvestmentPlanCalculator from '@/features/learn/InvestmentPlanCalculator.
 import CompoundInterestChart from '@/features/learn/CompoundInterestChart.vue'
 import MarketCrashChart from '@/features/learn/MarketCrashChart.vue'
 import DiversificationComparisonChart from '@/features/learn/DiversificationComparisonChart.vue'
-import { assistantApi, INVESTMENT_TOPICS, RISK_TOPICS, type InvestmentExplanation, type RiskExplanation } from '@/api/assistant.api'
+import { assistantApi } from '@/api/assistant.api'
+import { INVESTMENT_TOPICS, RISK_TOPICS, type InvestmentExplanation, type RiskExplanation } from '@/types/assistant.types'
 
 const activeLesson = ref<Lesson | null>(null)
 const activeBias = ref<CognitiveBias | null>(null)

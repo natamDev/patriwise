@@ -1,5 +1,7 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ConflictException;
+import com.finmate.domain.exception.UnauthorizedException;
 import com.finmate.domain.model.User;
 import com.finmate.domain.port.UserRepository;
 import io.smallrye.jwt.build.Jwt;
@@ -22,7 +24,7 @@ public class AuthService {
 
     public String register(String email, String password) {
         if (repository.existsByEmail(email)) {
-            throw new IllegalStateException("Un compte existe déjà avec cet email.");
+            throw new ConflictException("Un compte existe déjà avec cet email.");
         }
         User user = new User();
         user.setEmail(email);
@@ -34,9 +36,9 @@ public class AuthService {
 
     public String login(String email, String password) {
         User user = repository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Email ou mot de passe incorrect."));
+                .orElseThrow(() -> new UnauthorizedException("Email ou mot de passe incorrect."));
         if (!BCrypt.checkpw(password, user.getPasswordHash())) {
-            throw new IllegalArgumentException("Email ou mot de passe incorrect.");
+            throw new UnauthorizedException("Email ou mot de passe incorrect.");
         }
         return generateToken(user);
     }

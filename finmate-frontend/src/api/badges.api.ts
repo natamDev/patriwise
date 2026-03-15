@@ -1,13 +1,5 @@
 import api from '@/config'
-
-export interface BadgeStatus {
-  id: string
-  name: string
-  description: string
-  icon: string
-  unlocked: boolean
-  unlockedAt: string | null
-}
+import type { BadgeStatus } from '@/types/badge.types'
 
 export const badgesApi = {
   getBadges(): Promise<BadgeStatus[]> {

@@ -1,5 +1,7 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ResourceNotFoundException;
+import com.finmate.domain.exception.ValidationException;
 import com.finmate.domain.model.Goal;
 import com.finmate.domain.port.GoalRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,10 +21,10 @@ public class GoalService {
 
     public Goal create(Goal goal, UUID userId) {
         if (goal.getTargetAmount() != null && goal.getTargetAmount().signum() <= 0) {
-            throw new IllegalArgumentException("Le montant cible doit être supérieur à zéro.");
+            throw new ValidationException("Le montant cible doit être supérieur à zéro.");
         }
         if (goal.getTargetDate() != null && goal.getTargetDate().isBefore(java.time.LocalDate.now())) {
-            throw new IllegalArgumentException("La date cible ne peut pas être dans le passé.");
+            throw new ValidationException("La date cible ne peut pas être dans le passé.");
         }
         goal.setUserId(userId);
         goal.setCreatedAt(LocalDateTime.now());
@@ -35,21 +37,21 @@ public class GoalService {
 
     public Goal update(UUID goalId, UUID userId, Goal patch) {
         Goal existing = repository.findById(goalId)
-                .orElseThrow(() -> new IllegalArgumentException("Objectif introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Objectif introuvable."));
         if (!existing.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("Objectif introuvable.");
+            throw new ResourceNotFoundException("Objectif introuvable.");
         }
         if (patch.getGoalName() != null) existing.setGoalName(patch.getGoalName());
         if (patch.getGoalType() != null) existing.setGoalType(patch.getGoalType());
         if (patch.getTargetAmount() != null) {
             if (patch.getTargetAmount().signum() <= 0) {
-                throw new IllegalArgumentException("Le montant cible doit être supérieur à zéro.");
+                throw new ValidationException("Le montant cible doit être supérieur à zéro.");
             }
             existing.setTargetAmount(patch.getTargetAmount());
         }
         if (patch.getTargetDate() != null) {
             if (patch.getTargetDate().isBefore(java.time.LocalDate.now())) {
-                throw new IllegalArgumentException("La date cible ne peut pas être dans le passé.");
+                throw new ValidationException("La date cible ne peut pas être dans le passé.");
             }
             existing.setTargetDate(patch.getTargetDate());
         }
@@ -59,9 +61,9 @@ public class GoalService {
 
     public void delete(UUID goalId, UUID userId) {
         Goal existing = repository.findById(goalId)
-                .orElseThrow(() -> new IllegalArgumentException("Objectif introuvable."));
+                .orElseThrow(() -> new ResourceNotFoundException("Objectif introuvable."));
         if (!existing.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("Objectif introuvable.");
+            throw new ResourceNotFoundException("Objectif introuvable.");
         }
         repository.delete(existing);
     }

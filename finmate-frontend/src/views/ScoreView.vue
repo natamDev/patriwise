@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { scoreApi } from '@/api/score.api'
-import { badgesApi, type BadgeStatus } from '@/api/badges.api'
+import { badgesApi } from '@/api/badges.api'
+import type { BadgeStatus } from '@/types/badge.types'
 import type { FinancialScore } from '@/types/score.types'
 import QuizCard from '@/features/gamification/QuizCard.vue'
 

@@ -1,5 +1,6 @@
 package com.finmate.domain.service;
 
+import com.finmate.domain.exception.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -85,7 +86,7 @@ public class RiskEducationService {
     public RiskExplanation explain(String topic) {
         String normalized = topic.toUpperCase().trim().replace(" ", "_");
         if (!ALLOWED_TOPICS.contains(normalized)) {
-            throw new IllegalArgumentException("Sujet non reconnu : " + topic);
+            throw new ValidationException("Sujet non reconnu : " + topic);
         }
 
         String topicLabel = topicLabel(normalized);

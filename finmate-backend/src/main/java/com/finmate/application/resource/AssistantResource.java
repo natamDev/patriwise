@@ -36,7 +36,6 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Path("/api/assistant")
@@ -86,76 +85,52 @@ public class AssistantResource {
     @Path("/chat")
     @Operation(summary = "Send a message to the AI assistant")
     public Response chat(@Valid AssistantChatDto dto) {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            AssistantService.ChatResult result = service.chat(userId, dto.getConversationId(), dto.getMessage());
-            return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert(), result.biasAlert())).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        AssistantService.ChatResult result = service.chat(userId, dto.getConversationId(), dto.getMessage());
+        return Response.ok(new AssistantResponseDto(result.conversationId(), result.reply(), result.conceptCard(), result.fomoAlert(), result.biasAlert())).build();
     }
 
     @POST
     @Path("/coaching")
     @Operation(summary = "Generate a personalized coaching recommendation")
     public Response coaching() {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            AssistantRecommendation rec = coachingService.generateCoaching(userId);
-            return Response.ok(toDto(rec)).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        AssistantRecommendation rec = coachingService.generateCoaching(userId);
+        return Response.ok(toDto(rec)).build();
     }
 
     @POST
     @Path("/motivation")
     @Operation(summary = "Generate a personalized motivational message based on financial progress")
     public Response motivation() {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            MotivationService.MotivationResult result = motivationService.motivate(userId);
-            MotivationDto dto = new MotivationDto();
-            dto.setMessage(result.message());
-            dto.setCurrentStreak(result.stats().currentStreak());
-            dto.setLongestStreak(result.stats().longestStreak());
-            dto.setFinancialScore(result.stats().financialScore());
-            dto.setScoreLabel(result.stats().scoreLabel());
-            dto.setAverageGoalProgress(result.stats().averageGoalProgress());
-            dto.setActiveGoals(result.stats().activeGoals());
-            return Response.ok(dto).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        MotivationService.MotivationResult result = motivationService.motivate(userId);
+        MotivationDto dto = new MotivationDto();
+        dto.setMessage(result.message());
+        dto.setCurrentStreak(result.stats().currentStreak());
+        dto.setLongestStreak(result.stats().longestStreak());
+        dto.setFinancialScore(result.stats().financialScore());
+        dto.setScoreLabel(result.stats().scoreLabel());
+        dto.setAverageGoalProgress(result.stats().averageGoalProgress());
+        dto.setActiveGoals(result.stats().activeGoals());
+        return Response.ok(dto).build();
     }
 
     @POST
     @Path("/financial-projection")
     @Operation(summary = "Generate personalized financial projections based on user data")
     public Response financialProjection() {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            FinancialProjectionService.FinancialProjectionResult result = financialProjectionService.project(userId);
-            FinancialProjectionDto dto = new FinancialProjectionDto();
-            dto.setMonthlyInvestment(result.monthlyInvestment());
-            dto.setHorizonYears(result.horizonYears());
-            dto.setCurrency(result.currency());
-            dto.setConservative(toScenarioDto(result.conservative()));
-            dto.setModerate(toScenarioDto(result.moderate()));
-            dto.setOptimistic(toScenarioDto(result.optimistic()));
-            dto.setExplanation(result.explanation());
-            return Response.ok(dto).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        FinancialProjectionService.FinancialProjectionResult result = financialProjectionService.project(userId);
+        FinancialProjectionDto dto = new FinancialProjectionDto();
+        dto.setMonthlyInvestment(result.monthlyInvestment());
+        dto.setHorizonYears(result.horizonYears());
+        dto.setCurrency(result.currency());
+        dto.setConservative(toScenarioDto(result.conservative()));
+        dto.setModerate(toScenarioDto(result.moderate()));
+        dto.setOptimistic(toScenarioDto(result.optimistic()));
+        dto.setExplanation(result.explanation());
+        return Response.ok(dto).build();
     }
 
     private FinancialProjectionDto.ScenarioDto toScenarioDto(FinancialProjectionService.Scenario s) {
@@ -172,149 +147,109 @@ public class AssistantResource {
     @Path("/decision-coaching")
     @Operation(summary = "Guide the user through a structured financial decision-making process")
     public Response decisionCoaching(@Valid DecisionCoachingRequestDto dto) {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            DecisionCoachingService.DecisionCoachingResult result = decisionCoachingService.coach(
-                    userId, dto.getDecisionContext(), dto.getWhyInvesting(),
-                    dto.getInvestmentHorizon(), dto.getRiskTolerance(), dto.getFinancialGoal());
-            DecisionCoachingDto out = new DecisionCoachingDto();
-            out.setSessionId(result.sessionId());
-            out.setRecommendation(result.recommendation());
-            out.setDecisionContext(result.decisionContext());
-            out.setWhyInvesting(result.whyInvesting());
-            out.setInvestmentHorizon(result.investmentHorizon());
-            out.setRiskTolerance(result.riskTolerance());
-            out.setFinancialGoal(result.financialGoal());
-            return Response.ok(out).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        DecisionCoachingService.DecisionCoachingResult result = decisionCoachingService.coach(
+                userId, dto.getDecisionContext(), dto.getWhyInvesting(),
+                dto.getInvestmentHorizon(), dto.getRiskTolerance(), dto.getFinancialGoal());
+        DecisionCoachingDto out = new DecisionCoachingDto();
+        out.setSessionId(result.sessionId());
+        out.setRecommendation(result.recommendation());
+        out.setDecisionContext(result.decisionContext());
+        out.setWhyInvesting(result.whyInvesting());
+        out.setInvestmentHorizon(result.investmentHorizon());
+        out.setRiskTolerance(result.riskTolerance());
+        out.setFinancialGoal(result.financialGoal());
+        return Response.ok(out).build();
     }
 
     @POST
     @Path("/risk-education")
     @Operation(summary = "Generate an educational explanation for a financial risk concept")
     public Response riskEducation(@Valid RiskEducationRequestDto dto) {
-        try {
-            RiskEducationService.RiskExplanation result = riskEducationService.explain(dto.getTopic());
-            RiskEducationDto out = new RiskEducationDto();
-            out.setTopic(result.topic());
-            out.setTopicLabel(result.topicLabel());
-            out.setDefinition(result.definition());
-            out.setExample(result.example());
-            out.setHistoricalExample(result.historicalExample());
-            out.setHowToReact(result.howToReact());
-            out.setSimpleSummary(result.simpleSummary());
-            out.setKeyPoints(result.keyPoints());
-            return Response.ok(out).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        RiskEducationService.RiskExplanation result = riskEducationService.explain(dto.getTopic());
+        RiskEducationDto out = new RiskEducationDto();
+        out.setTopic(result.topic());
+        out.setTopicLabel(result.topicLabel());
+        out.setDefinition(result.definition());
+        out.setExample(result.example());
+        out.setHistoricalExample(result.historicalExample());
+        out.setHowToReact(result.howToReact());
+        out.setSimpleSummary(result.simpleSummary());
+        out.setKeyPoints(result.keyPoints());
+        return Response.ok(out).build();
     }
 
     @POST
     @Path("/investment-simulation")
     @Operation(summary = "Simulate an investment and get an AI-powered explanation")
     public Response investmentSimulation(@Valid InvestmentSimulationRequestDto dto) {
-        try {
-            InvestmentSimulatorService.SimulationResult result = investmentSimulatorService.simulate(
-                    dto.getMonthlyInvestment(), dto.getExpectedReturn(), dto.getHorizonYears());
-            InvestmentSimulationDto out = new InvestmentSimulationDto();
-            out.setMonthlyInvestment(result.monthlyInvestment());
-            out.setExpectedReturn(result.expectedReturn());
-            out.setHorizonYears(result.horizonYears());
-            out.setCapitalInvested(result.capitalInvested());
-            out.setCapitalFinal(result.capitalFinal());
-            out.setInterestGain(result.interestGain());
-            out.setExplanation(result.explanation());
-            return Response.ok(out).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        InvestmentSimulatorService.SimulationResult result = investmentSimulatorService.simulate(
+                dto.getMonthlyInvestment(), dto.getExpectedReturn(), dto.getHorizonYears());
+        InvestmentSimulationDto out = new InvestmentSimulationDto();
+        out.setMonthlyInvestment(result.monthlyInvestment());
+        out.setExpectedReturn(result.expectedReturn());
+        out.setHorizonYears(result.horizonYears());
+        out.setCapitalInvested(result.capitalInvested());
+        out.setCapitalFinal(result.capitalFinal());
+        out.setInterestGain(result.interestGain());
+        out.setExplanation(result.explanation());
+        return Response.ok(out).build();
     }
 
     @POST
     @Path("/investment-education")
     @Operation(summary = "Generate an educational explanation for an investment concept")
     public Response investmentEducation(@Valid InvestmentEducationRequestDto dto) {
-        try {
-            InvestmentEducationService.InvestmentExplanation result = investmentEducationService.explain(dto.getTopic());
-            InvestmentEducationDto out = new InvestmentEducationDto();
-            out.setTopic(result.topic());
-            out.setTopicLabel(result.topicLabel());
-            out.setDefinition(result.definition());
-            out.setExample(result.example());
-            out.setRisk(result.risk());
-            out.setSimpleSummary(result.simpleSummary());
-            out.setKeyPoints(result.keyPoints());
-            return Response.ok(out).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        InvestmentEducationService.InvestmentExplanation result = investmentEducationService.explain(dto.getTopic());
+        InvestmentEducationDto out = new InvestmentEducationDto();
+        out.setTopic(result.topic());
+        out.setTopicLabel(result.topicLabel());
+        out.setDefinition(result.definition());
+        out.setExample(result.example());
+        out.setRisk(result.risk());
+        out.setSimpleSummary(result.simpleSummary());
+        out.setKeyPoints(result.keyPoints());
+        return Response.ok(out).build();
     }
 
     @POST
     @Path("/savings-coaching")
     @Operation(summary = "Generate savings coaching based on goal progress")
     public Response savingsCoaching() {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            SavingsCoachingService.SavingsCoachingResult result = savingsCoachingService.coach(userId);
-            SavingsCoachingDto dto = new SavingsCoachingDto();
-            dto.setCoaching(result.coaching());
-            dto.setGoals(result.goals().stream().map(item -> {
-                SavingsCoachingDto.GoalSummary gs = new SavingsCoachingDto.GoalSummary();
-                gs.setGoalId(item.goalId());
-                gs.setGoalName(item.goalName());
-                gs.setGoalType(item.goalType());
-                gs.setTargetAmount(item.targetAmount());
-                gs.setSavedAmount(item.savedAmount());
-                gs.setRemainingAmount(item.remainingAmount());
-                gs.setPercent(item.percent());
-                gs.setMonthsNeeded(item.monthsNeeded());
-                gs.setEstimatedCompletionDate(item.estimatedCompletionDate());
-                gs.setMonthlyContribution(item.monthlyContribution());
-                gs.setOptimizedContribution(item.optimizedContribution());
-                return gs;
-            }).toList());
-            return Response.ok(dto).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        SavingsCoachingService.SavingsCoachingResult result = savingsCoachingService.coach(userId);
+        SavingsCoachingDto dto = new SavingsCoachingDto();
+        dto.setCoaching(result.coaching());
+        dto.setGoals(result.goals().stream().map(item -> {
+            SavingsCoachingDto.GoalSummary gs = new SavingsCoachingDto.GoalSummary();
+            gs.setGoalId(item.goalId());
+            gs.setGoalName(item.goalName());
+            gs.setGoalType(item.goalType());
+            gs.setTargetAmount(item.targetAmount());
+            gs.setSavedAmount(item.savedAmount());
+            gs.setRemainingAmount(item.remainingAmount());
+            gs.setPercent(item.percent());
+            gs.setMonthsNeeded(item.monthsNeeded());
+            gs.setEstimatedCompletionDate(item.estimatedCompletionDate());
+            gs.setMonthlyContribution(item.monthlyContribution());
+            gs.setOptimizedContribution(item.optimizedContribution());
+            return gs;
+        }).toList());
+        return Response.ok(dto).build();
     }
 
     @POST
     @Path("/financial-analysis")
     @Operation(summary = "Analyze user financial situation")
     public Response financialAnalysis() {
-        try {
-            UUID userId = UUID.fromString(jwt.getSubject());
-            FinancialAnalysisService.FinancialAnalysisResult result = financialAnalysisService.analyze(userId);
-            FinancialAnalysisDto dto = new FinancialAnalysisDto();
-            dto.setAnalysis(result.analysis());
-            dto.setExpenseByCategory(result.expenseByCategory());
-            dto.setSavingCapacity(result.savingCapacity());
-            dto.setSpendingAlerts(result.spendingAlerts());
-            return Response.ok(dto).build();
-        } catch (RuntimeException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        UUID userId = UUID.fromString(jwt.getSubject());
+        FinancialAnalysisService.FinancialAnalysisResult result = financialAnalysisService.analyze(userId);
+        FinancialAnalysisDto dto = new FinancialAnalysisDto();
+        dto.setAnalysis(result.analysis());
+        dto.setExpenseByCategory(result.expenseByCategory());
+        dto.setSavingCapacity(result.savingCapacity());
+        dto.setSpendingAlerts(result.spendingAlerts());
+        return Response.ok(dto).build();
     }
 
     private AssistantRecommendationDto toDto(AssistantRecommendation r) {

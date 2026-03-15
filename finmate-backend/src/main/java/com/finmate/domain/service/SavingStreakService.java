@@ -5,9 +5,8 @@ import com.finmate.domain.model.GoalContribution;
 import com.finmate.domain.model.SavingStreak;
 import com.finmate.domain.port.GoalContributionRepository;
 import com.finmate.domain.port.GoalRepository;
-import com.finmate.infrastructure.postgres.SavingStreakEntity;
+import com.finmate.domain.port.SavingStreakRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import java.time.YearMonth;
@@ -20,14 +19,14 @@ public class SavingStreakService {
 
     private final GoalRepository goalRepository;
     private final GoalContributionRepository contributionRepository;
-    private final EntityManager em;
+    private final SavingStreakRepository streakRepository;
 
     public SavingStreakService(GoalRepository goalRepository,
                                GoalContributionRepository contributionRepository,
-                               EntityManager em) {
+                               SavingStreakRepository streakRepository) {
         this.goalRepository = goalRepository;
         this.contributionRepository = contributionRepository;
-        this.em = em;
+        this.streakRepository = streakRepository;
     }
 
     @Transactional
@@ -65,20 +64,7 @@ public class SavingStreakService {
             currentStreak = 0;
         }
 
-        SavingStreakEntity entity = SavingStreakEntity.findByUserId(userId).orElseGet(() -> {
-            SavingStreakEntity e = new SavingStreakEntity();
-            e.setUserId(userId);
-            return e;
-        });
-        entity.setCurrentStreak(currentStreak);
-        entity.setLongestStreak(longestStreak);
-
-        if (em.contains(entity)) {
-            em.merge(entity);
-        } else {
-            em.persist(entity);
-        }
-
-        return new SavingStreak(userId, currentStreak, longestStreak);
+        SavingStreak result = new SavingStreak(userId, currentStreak, longestStreak);
+        return streakRepository.save(result);
     }
 }

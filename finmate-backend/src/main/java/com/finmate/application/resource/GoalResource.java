@@ -19,7 +19,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Path("/api/goals")
@@ -43,18 +42,14 @@ public class GoalResource {
     @POST
     @Operation(summary = "Create a savings goal")
     public Response create(@Valid CreateGoalDto dto) {
-        try {
-            Goal goal = new Goal();
-            goal.setGoalName(dto.getGoalName());
-            goal.setGoalType(dto.getGoalType());
-            goal.setTargetAmount(dto.getTargetAmount());
-            goal.setTargetDate(dto.getTargetDate());
-            goal.setMonthlyContribution(dto.getMonthlyContribution());
-            Goal created = service.create(goal, currentUserId());
-            return Response.status(Response.Status.CREATED).entity(toDto(created)).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
-        }
+        Goal goal = new Goal();
+        goal.setGoalName(dto.getGoalName());
+        goal.setGoalType(dto.getGoalType());
+        goal.setTargetAmount(dto.getTargetAmount());
+        goal.setTargetDate(dto.getTargetDate());
+        goal.setMonthlyContribution(dto.getMonthlyContribution());
+        Goal created = service.create(goal, currentUserId());
+        return Response.status(Response.Status.CREATED).entity(toDto(created)).build();
     }
 
     @GET
@@ -67,55 +62,39 @@ public class GoalResource {
     @Path("/{id}")
     @Operation(summary = "Update a savings goal")
     public Response update(@PathParam("id") UUID id, UpdateGoalDto dto) {
-        try {
-            Goal patch = new Goal();
-            patch.setGoalName(dto.getGoalName());
-            patch.setGoalType(dto.getGoalType());
-            patch.setTargetAmount(dto.getTargetAmount());
-            patch.setTargetDate(dto.getTargetDate());
-            patch.setMonthlyContribution(dto.getMonthlyContribution());
-            Goal updated = service.update(id, currentUserId(), patch);
-            return Response.ok(toDto(updated)).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
-        }
+        Goal patch = new Goal();
+        patch.setGoalName(dto.getGoalName());
+        patch.setGoalType(dto.getGoalType());
+        patch.setTargetAmount(dto.getTargetAmount());
+        patch.setTargetDate(dto.getTargetDate());
+        patch.setMonthlyContribution(dto.getMonthlyContribution());
+        Goal updated = service.update(id, currentUserId(), patch);
+        return Response.ok(toDto(updated)).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Operation(summary = "Delete a savings goal")
     public Response delete(@PathParam("id") UUID id) {
-        try {
-            service.delete(id, currentUserId());
-            return Response.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", e.getMessage())).build();
-        }
+        service.delete(id, currentUserId());
+        return Response.noContent().build();
     }
 
     @GET
     @Path("/{id}/progress")
     @Operation(summary = "Get goal progress")
     public Response getProgress(@PathParam("id") UUID id) {
-        try {
-            GoalProgressService.GoalProgress p = progressService.getProgress(id, currentUserId());
-            return Response.ok(toProgressDto(p)).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", e.getMessage())).build();
-        }
+        GoalProgressService.GoalProgress p = progressService.getProgress(id, currentUserId());
+        return Response.ok(toProgressDto(p)).build();
     }
 
     @POST
     @Path("/{id}/contributions")
     @Operation(summary = "Add a contribution to a goal")
     public Response addContribution(@PathParam("id") UUID id, @Valid CreateContributionDto dto) {
-        try {
-            progressService.addContribution(id, currentUserId(), dto.getAmount());
-            GoalProgressService.GoalProgress p = progressService.getProgress(id, currentUserId());
-            return Response.status(Response.Status.CREATED).entity(toProgressDto(p)).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", e.getMessage())).build();
-        }
+        progressService.addContribution(id, currentUserId(), dto.getAmount());
+        GoalProgressService.GoalProgress p = progressService.getProgress(id, currentUserId());
+        return Response.status(Response.Status.CREATED).entity(toProgressDto(p)).build();
     }
 
     private UUID currentUserId() {
