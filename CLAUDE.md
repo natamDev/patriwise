@@ -80,7 +80,7 @@ Implement features in this order, completing each before moving to the next:
 6. AI Financial Assistant (EPIC 6) DONE
 7. Financial Projections (EPIC 7) DONE
 8. Gamification (EPIC 8) DONE
-9. AI Financial Coaching Assistant (EPIC 9) DONE
+9. AI Financial Coaching Assistant (EPIC 9) DONE WHITOUT 9.11 & 9.12
 10. Security & Access Control (EPIC 10) WIP
 11. Observality & Monitoring (EPIC 11)
 12. Admin backoffice (EPIC 12)

@@ -26,21 +26,21 @@ Technical Notes
 
 Permettre à l’utilisateur de :
 
-* comprendre sa situation financière actuelle
+- comprendre sa situation financière actuelle
 
-* identifier ses dépenses
+- identifier ses dépenses
 
-* calculer sa capacité d’épargne
+- calculer sa capacité d’épargne
 
-* obtenir une vision claire de son budget.
+- obtenir une vision claire de son budget.
 
 Ce module constitue **la base de toutes les analyses futures** :
 
-* objectifs d’épargne
+- objectifs d’épargne
 
-* projections financières
+- projections financières
 
-* coaching IA.
+- coaching IA.
 
 ---
 
@@ -58,17 +58,17 @@ En tant qu’utilisateur
 
 Les utilisateurs de 18-25 ans :
 
-* ont rarement une vision claire de leurs finances
+- ont rarement une vision claire de leurs finances
 
-* ne savent pas combien ils peuvent épargner
+- ne savent pas combien ils peuvent épargner
 
-* ne suivent pas leurs revenus.
+- ne suivent pas leurs revenus.
 
 Le profil financier permet :
 
-* de calculer la capacité d’épargne
+- de calculer la capacité d’épargne
 
-* de personnaliser les recommandations.
+- de personnaliser les recommandations.
 
 ---
 
@@ -92,17 +92,17 @@ Le profil financier permet :
 
 Le formulaire doit collecter :
 
-monthly\_income
+monthly_income
 
-employment\_status
+employment_status
 
 age
 
-financial\_experience\_level
+financial_experience_level
 
 currency
 
-employment\_status options :
+employment_status options :
 
 student
 
@@ -112,7 +112,7 @@ freelancer
 
 unemployed
 
-financial\_experience\_level options :
+financial_experience_level options :
 
 beginner
 
@@ -126,31 +126,30 @@ advanced
 
 Le profil doit :
 
-* être enregistré en base de données
+- être enregistré en base de données
 
-* être modifiable depuis les paramètres
+- être modifiable depuis les paramètres
 
-* être accessible via API
+- être accessible via API
 
-* être utilisé par :
+- être utilisé par :
+  - le calcul du score financier
 
-  * le calcul du score financier
+  - les projections financières
 
-  * les projections financières
-
-  * les recommandations IA
+  - les recommandations IA
 
 ---
 
 ## **Edge Cases**
 
-* revenu \= 0
+- revenu \= 0
 
-* revenu variable
+- revenu variable
 
-* utilisateur étudiant
+- utilisateur étudiant
 
-* devise différente
+- devise différente
 
 ---
 
@@ -158,25 +157,25 @@ Le profil doit :
 
 users
 
-financial\_profiles
+financial_profiles
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- monthly\_income
+\- monthly_income
 
-\- employment\_status
+\- employment_status
 
 \- age
 
-\- financial\_experience\_level
+\- financial_experience_level
 
 \- currency
 
-\- created\_at
+\- created_at
 
-\- updated\_at
+\- updated_at
 
 ---
 
@@ -214,17 +213,17 @@ En tant qu’utilisateur
 
 Les jeunes :
 
-* sous-estiment leurs dépenses
+- sous-estiment leurs dépenses
 
-* oublient les petits achats
+- oublient les petits achats
 
-* ignorent leurs abonnements.
+- ignorent leurs abonnements.
 
 Le suivi des dépenses permet :
 
-* d’identifier les postes de dépenses
+- d’identifier les postes de dépenses
 
-* de calculer le reste à vivre.
+- de calculer le reste à vivre.
 
 ---
 
@@ -276,13 +275,13 @@ other
 
 Fonctions :
 
-* ajouter dépense
+- ajouter dépense
 
-* modifier dépense
+- modifier dépense
 
-* supprimer dépense
+- supprimer dépense
 
-* filtrer par mois
+- filtrer par mois
 
 ---
 
@@ -290,29 +289,29 @@ Fonctions :
 
 L’utilisateur peut :
 
-* créer une dépense
+- créer une dépense
 
-* modifier une dépense
+- modifier une dépense
 
-* supprimer une dépense
+- supprimer une dépense
 
-* voir les dépenses par catégorie
+- voir les dépenses par catégorie
 
 Le système doit :
 
-* recalculer le budget automatiquement.
+- recalculer le budget automatiquement.
 
 ---
 
 ## **Edge Cases**
 
-* montant négatif
+- montant négatif
 
-* montant très élevé
+- montant très élevé
 
-* catégorie inexistante
+- catégorie inexistante
 
-* date future
+- date future
 
 ---
 
@@ -322,7 +321,7 @@ expenses
 
 \- id
 
-\- user\_id
+\- user_id
 
 \- amount
 
@@ -330,9 +329,9 @@ expenses
 
 \- description
 
-\- expense\_date
+\- expense_date
 
-\- created\_at
+\- created_at
 
 ---
 
@@ -374,11 +373,11 @@ En tant qu’utilisateur
 
 Les utilisateurs doivent comprendre rapidement :
 
-* combien ils gagnent
+- combien ils gagnent
 
-* combien ils dépensent
+- combien ils dépensent
 
-* combien ils peuvent épargner.
+- combien ils peuvent épargner.
 
 Le dashboard doit être **simple et mobile-first**.
 
@@ -400,11 +399,11 @@ Le dashboard doit être **simple et mobile-first**.
 
 Calculs :
 
-total\_expenses \= SUM(expenses)
+total_expenses \= SUM(expenses)
 
-remaining\_income \= monthly\_income \- total\_expenses
+remaining_income \= monthly_income \- total_expenses
 
-savings\_rate \= remaining\_income / monthly\_income
+savings_rate \= remaining_income / monthly_income
 
 Le dashboard doit afficher :
 
@@ -426,21 +425,21 @@ monthly trend
 
 Le dashboard doit :
 
-* afficher les données en temps réel
+- afficher les données en temps réel
 
-* être responsive
+- être responsive
 
-* afficher les graphiques correctement
+- afficher les graphiques correctement
 
 ---
 
 ## **Edge Cases**
 
-* aucune dépense enregistrée
+- aucune dépense enregistrée
 
-* revenu nul
+- revenu nul
 
-* dépenses supérieures au revenu
+- dépenses supérieures au revenu
 
 ---
 
@@ -448,7 +447,7 @@ Le dashboard doit :
 
 Utilise :
 
-financial\_profiles
+financial_profiles
 
 expenses
 
@@ -482,9 +481,9 @@ En tant qu’utilisateur
 
 Un score simple permet :
 
-* de comprendre sa situation
+- de comprendre sa situation
 
-* de motiver l’amélioration.
+- de motiver l’amélioration.
 
 ---
 
@@ -502,29 +501,29 @@ Un score simple permet :
 
 Score calculé à partir de :
 
-savings\_rate
+savings_rate
 
-expense\_ratio
+expense_ratio
 
-goal\_progress
+goal_progress
 
-financial\_stability
+financial_stability
 
 Formule exemple :
 
 score \=
 
-(savings\_rate \* 50\)
+(savings_rate \* 50\)
 
-\+ (expense\_control \* 20\)
+\+ (expense_control \* 20\)
 
-\+ (goal\_progress \* 20\)
+\+ (goal_progress \* 20\)
 
-\+ (financial\_stability \* 10\)
+\+ (financial_stability \* 10\)
 
 Score affiché :
 
-0 – 40  : poor
+0 – 40 : poor
 
 40 – 70 : improving
 
@@ -536,35 +535,35 @@ Score affiché :
 
 Le score doit :
 
-* être recalculé automatiquement
+- être recalculé automatiquement
 
-* être visible sur le dashboard
+- être visible sur le dashboard
 
-* inclure une explication.
+- inclure une explication.
 
 ---
 
 ## **Edge Cases**
 
-* revenu nul
+- revenu nul
 
-* aucune dépense
+- aucune dépense
 
-* aucun objectif financier
+- aucun objectif financier
 
 ---
 
 ## **Data Model**
 
-financial\_scores
+financial_scores
 
 \- id
 
-\- user\_id
+\- user_id
 
 \- score
 
-\- calculated\_at
+\- calculated_at
 
 ---
 
@@ -572,13 +571,13 @@ financial\_scores
 
 Service :
 
-financial\_score\_engine
+financial_score_engine
 
 Calcul exécuté :
 
-* à chaque modification de budget
+- à chaque modification de budget
 
-* à chaque modification d’objectif.
+- à chaque modification d’objectif.
 
 ---
 
@@ -590,11 +589,11 @@ Créer une **habitude d’épargne régulière**.
 
 Le module doit :
 
-* encourager l’épargne
+- encourager l’épargne
 
-* montrer la progression
+- montrer la progression
 
-* renforcer la motivation.
+- renforcer la motivation.
 
 ---
 
@@ -614,11 +613,11 @@ Les objectifs rendent l’épargne concrète.
 
 Exemples :
 
-* voyage
+- voyage
 
-* fonds d’urgence
+- fonds d’urgence
 
-* investissement.
+- investissement.
 
 ---
 
@@ -638,21 +637,21 @@ Exemples :
 
 Un objectif contient :
 
-goal\_name
+goal_name
 
-goal\_type
+goal_type
 
-target\_amount
+target_amount
 
-target\_date
+target_date
 
-monthly\_contribution
+monthly_contribution
 
-goal\_type :
+goal_type :
 
 travel
 
-emergency\_fund
+emergency_fund
 
 investment
 
@@ -666,21 +665,21 @@ other
 
 L’utilisateur peut :
 
-* créer
+- créer
 
-* modifier
+- modifier
 
-* supprimer un objectif.
+- supprimer un objectif.
 
 ---
 
 ## **Edge Cases**
 
-* montant cible \= 0
+- montant cible \= 0
 
-* date passée
+- date passée
 
-* contribution trop élevée
+- contribution trop élevée
 
 ---
 
@@ -690,19 +689,19 @@ goals
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- goal\_name
+\- goal_name
 
-\- goal\_type
+\- goal_type
 
-\- target\_amount
+\- target_amount
 
-\- target\_date
+\- target_date
 
-\- monthly\_contribution
+\- monthly_contribution
 
-\- created\_at
+\- created_at
 
 ---
 
@@ -736,7 +735,7 @@ La progression visuelle motive l’utilisateur.
 
 Calcul :
 
-progress \= saved\_amount / target\_amount
+progress \= saved_amount / target_amount
 
 Affichage :
 
@@ -752,23 +751,23 @@ completion percentage
 
 Le système doit :
 
-* mettre à jour la progression
+- mettre à jour la progression
 
-* afficher les données correctement.
+- afficher les données correctement.
 
 ---
 
 ## **Data Model**
 
-goal\_contributions
+goal_contributions
 
 \- id
 
-\- goal\_id
+\- goal_id
 
 \- amount
 
-\- contribution\_date
+\- contribution_date
 
 ---
 
@@ -786,15 +785,15 @@ En tant qu’utilisateur
 
 Inputs :
 
-monthly\_contribution
+monthly_contribution
 
-target\_amount
+target_amount
 
-target\_date
+target_date
 
 Calcul :
 
-months\_needed \= target\_amount / monthly\_contribution
+months_needed \= target_amount / monthly_contribution
 
 ---
 
@@ -802,9 +801,9 @@ months\_needed \= target\_amount / monthly\_contribution
 
 L’utilisateur doit voir :
 
-* durée nécessaire
+- durée nécessaire
 
-* date estimée de réussite.
+- date estimée de réussite.
 
 ---
 
@@ -822,7 +821,7 @@ En tant qu’utilisateur
 
 Algorithme :
 
-if contribution\_month \== previous\_month \+ 1
+if contribution_month \== previous_month \+ 1
 
 streak \+= 1
 
@@ -834,13 +833,13 @@ streak \= 1
 
 ## **Data Model**
 
-saving\_streaks
+saving_streaks
 
-\- user\_id
+\- user_id
 
-\- current\_streak
+\- current_streak
 
-\- longest\_streak
+\- longest_streak
 
 ---
 
@@ -852,13 +851,13 @@ Inspiré de **A Random Walk Down Wall Street**
 
 Apprendre aux utilisateurs **les bases de l’investissement passif** :
 
-* ETF
+- ETF
 
-* diversification
+- diversification
 
-* investissement long terme
+- investissement long terme
 
-* régularité d’investissement
+- régularité d’investissement
 
 Le module doit être **pédagogique et non spéculatif**.
 
@@ -878,11 +877,11 @@ En tant qu’utilisateur
 
 Les jeunes investisseurs :
 
-* confondent ETF et actions
+- confondent ETF et actions
 
-* sont influencés par la spéculation
+- sont influencés par la spéculation
 
-* ignorent la diversification.
+- ignorent la diversification.
 
 Le module doit expliquer **les ETF de manière simple et pédagogique**.
 
@@ -936,29 +935,29 @@ ETF \= panier d’actions permettant d’investir dans plusieurs entreprises à 
 
 La leçon doit :
 
-* être accessible depuis la page Learn
+- être accessible depuis la page Learn
 
-* contenir un texte pédagogique
+- contenir un texte pédagogique
 
-* inclure une illustration ou graphique
+- inclure une illustration ou graphique
 
-* inclure un bouton **Start Quiz**
+- inclure un bouton **Start Quiz**
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur hors ligne
+- utilisateur hors ligne
 
-* contenu manquant
+- contenu manquant
 
-* chargement lent
+- chargement lent
 
 ---
 
 ## **Data Model**
 
-education\_lessons
+education_lessons
 
 \- id
 
@@ -968,7 +967,7 @@ education\_lessons
 
 \- category
 
-\- created\_at
+\- created_at
 
 ---
 
@@ -996,9 +995,9 @@ En tant qu’utilisateur
 
 Les débutants pensent qu’il faut :
 
-* choisir des actions
+- choisir des actions
 
-* battre le marché.
+- battre le marché.
 
 Le produit doit montrer qu’un **portefeuille simple est souvent plus efficace**.
 
@@ -1026,13 +1025,13 @@ Exemple de portefeuille pédagogique :
 
 Chaque allocation doit afficher :
 
-asset\_name
+asset_name
 
 percentage
 
 description
 
-risk\_level
+risk_level
 
 ---
 
@@ -1040,25 +1039,25 @@ risk\_level
 
 L’utilisateur doit pouvoir :
 
-* voir l’allocation
+- voir l’allocation
 
-* cliquer sur chaque élément
+- cliquer sur chaque élément
 
-* lire une explication
+- lire une explication
 
 ---
 
 ## **Edge Cases**
 
-* données ETF manquantes
+- données ETF manquantes
 
-* affichage mobile trop dense
+- affichage mobile trop dense
 
 ---
 
 ## **Data Model**
 
-portfolio\_examples
+portfolio_examples
 
 \- id
 
@@ -1094,9 +1093,9 @@ Le **Dollar Cost Averaging (DCA)** permet d’investir progressivement.
 
 Le module doit montrer :
 
-* combien investir
+- combien investir
 
-* pendant combien de temps.
+- pendant combien de temps.
 
 ---
 
@@ -1116,19 +1115,19 @@ Le module doit montrer :
 
 Inputs :
 
-monthly\_investment
+monthly_investment
 
-investment\_horizon
+investment_horizon
 
-expected\_return
+expected_return
 
 Outputs :
 
-total\_invested
+total_invested
 
-future\_value
+future_value
 
-total\_gain
+total_gain
 
 ---
 
@@ -1136,37 +1135,37 @@ total\_gain
 
 Le plan doit :
 
-* afficher la projection
+- afficher la projection
 
-* montrer le capital investi
+- montrer le capital investi
 
-* montrer les gains estimés
+- montrer les gains estimés
 
 ---
 
 ## **Edge Cases**
 
-* montant \= 0
+- montant \= 0
 
-* horizon très long
+- horizon très long
 
-* rendement négatif
+- rendement négatif
 
 ---
 
 ## **Data Model**
 
-investment\_plans
+investment_plans
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- monthly\_investment
+\- monthly_investment
 
-\- expected\_return
+\- expected_return
 
-\- investment\_horizon
+\- investment_horizon
 
 ---
 
@@ -1210,15 +1209,15 @@ Le simulateur doit rendre cela **visuel et concret**.
 
 Inputs :
 
-monthly\_investment
+monthly_investment
 
-interest\_rate
+interest_rate
 
 years
 
 Calcul :
 
-future\_value \= P \* ((1+r)^n \- 1\) / r
+future_value \= P \* ((1+r)^n \- 1\) / r
 
 ---
 
@@ -1226,21 +1225,21 @@ future\_value \= P \* ((1+r)^n \- 1\) / r
 
 Le simulateur doit afficher :
 
-* capital final
+- capital final
 
-* capital investi
+- capital investi
 
-* intérêts générés
+- intérêts générés
 
-* graphique croissance
+- graphique croissance
 
 ---
 
 ## **Edge Cases**
 
-* investissement unique
+- investissement unique
 
-* rendement nul
+- rendement nul
 
 ---
 
@@ -1260,11 +1259,11 @@ Inspiré de **Fooled by Randomness**
 
 Faire comprendre que :
 
-* les marchés sont incertains
+- les marchés sont incertains
 
-* la volatilité est normale
+- la volatilité est normale
 
-* la diversification réduit les risques.
+- la diversification réduit les risques.
 
 ---
 
@@ -1298,11 +1297,11 @@ Les débutants pensent que les marchés montent en ligne droite.
 
 La leçon doit expliquer :
 
-volatility\_definition
+volatility_definition
 
-market\_fluctuations
+market_fluctuations
 
-long\_term\_trend
+long_term_trend
 
 ---
 
@@ -1310,17 +1309,17 @@ long\_term\_trend
 
 La leçon doit inclure :
 
-* graphique volatilité
+- graphique volatilité
 
-* exemple historique
+- exemple historique
 
-* explication simple
+- explication simple
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur sans expérience financière
+- utilisateur sans expérience financière
 
 ---
 
@@ -1328,7 +1327,7 @@ La leçon doit inclure :
 
 Réutilise :
 
-education\_lessons
+education_lessons
 
 ---
 
@@ -1362,9 +1361,9 @@ Les investisseurs paniquent souvent lors des baisses.
 
 Paramètres :
 
-market\_drop \= \-30%
+market_drop \= \-30%
 
-recovery\_period \= 3 years
+recovery_period \= 3 years
 
 ---
 
@@ -1372,19 +1371,19 @@ recovery\_period \= 3 years
 
 Le graphique doit afficher :
 
-* baisse
+- baisse
 
-* récupération
+- récupération
 
-* horizon long terme
+- horizon long terme
 
 ---
 
 ## **Edge Cases**
 
-* chute plus forte
+- chute plus forte
 
-* récupération lente
+- récupération lente
 
 ---
 
@@ -1410,9 +1409,9 @@ En tant qu’utilisateur
 
 Diversifier permet de :
 
-* réduire la volatilité
+- réduire la volatilité
 
-* protéger le portefeuille.
+- protéger le portefeuille.
 
 ---
 
@@ -1430,9 +1429,9 @@ Diversifier permet de :
 
 Comparer :
 
-single\_asset\_portfolio
+single_asset_portfolio
 
-diversified\_portfolio
+diversified_portfolio
 
 ---
 
@@ -1440,11 +1439,11 @@ diversified\_portfolio
 
 Afficher :
 
-* volatilité
+- volatilité
 
-* performance
+- performance
 
-* risque
+- risque
 
 ---
 
@@ -1496,11 +1495,11 @@ Le **Fear Of Missing Out** pousse les investisseurs à acheter au mauvais moment
 
 Détection :
 
-rapid\_price\_increase
+rapid_price_increase
 
-social\_media\_hype
+social_media_hype
 
-short\_term\_intent
+short_term_intent
 
 ---
 
@@ -1508,9 +1507,9 @@ short\_term\_intent
 
 L’assistant doit :
 
-* expliquer le biais
+- expliquer le biais
 
-* proposer une alternative
+- proposer une alternative
 
 ---
 
@@ -1518,7 +1517,7 @@ L’assistant doit :
 
 Module :
 
-bias\_detection\_engine
+bias_detection_engine
 
 ---
 
@@ -1536,13 +1535,13 @@ En tant qu’utilisateur
 
 Les principaux biais :
 
-* FOMO
+- FOMO
 
-* confirmation bias
+- confirmation bias
 
-* overconfidence
+- overconfidence
 
-* loss aversion
+- loss aversion
 
 ---
 
@@ -1556,17 +1555,17 @@ example
 
 impact
 
-how\_to\_avoid
+how_to_avoid
 
 ---
 
 ## **Data Model**
 
-behavioral\_lessons
+behavioral_lessons
 
 \- id
 
-\- bias\_name
+\- bias_name
 
 \- explanation
 
@@ -1604,13 +1603,13 @@ Avant une décision importante, l’assistant pose des questions.
 
 Questions :
 
-why\_are\_you\_investing
+why_are_you_investing
 
-investment\_horizon
+investment_horizon
 
-risk\_tolerance
+risk_tolerance
 
-financial\_goal
+financial_goal
 
 ---
 
@@ -1618,11 +1617,11 @@ financial\_goal
 
 Le coaching doit :
 
-* ralentir la décision
+- ralentir la décision
 
-* expliquer les risques
+- expliquer les risques
 
-* encourager long terme
+- encourager long terme
 
 # **EPIC 6 — AI Financial Assistant**
 
@@ -1630,13 +1629,13 @@ Le coaching doit :
 
 Permettre à l’utilisateur d’interagir avec un **assistant financier intelligent** qui :
 
-* répond aux questions financières
+- répond aux questions financières
 
-* explique les concepts
+- explique les concepts
 
-* donne un coaching comportemental
+- donne un coaching comportemental
 
-* s’appuie sur la situation financière de l’utilisateur.
+- s’appuie sur la situation financière de l’utilisateur.
 
 L’assistant doit être **éducatif et non spéculatif**.
 
@@ -1656,19 +1655,19 @@ En tant qu’utilisateur
 
 Les utilisateurs 18-25 :
 
-* ont peu de connaissances financières
+- ont peu de connaissances financières
 
-* sont influencés par les réseaux sociaux
+- sont influencés par les réseaux sociaux
 
-* ont besoin d’explications simples.
+- ont besoin d’explications simples.
 
 L’assistant doit répondre avec :
 
-* pédagogie
+- pédagogie
 
-* simplicité
+- simplicité
 
-* neutralité.
+- neutralité.
 
 ---
 
@@ -1692,27 +1691,27 @@ L’assistant doit répondre avec :
 
 Interface chat contenant :
 
-user\_input
+user_input
 
-assistant\_response
+assistant_response
 
 timestamp
 
-conversation\_history
+conversation_history
 
 Fonctions principales :
 
-* envoyer message
+- envoyer message
 
-* recevoir réponse
+- recevoir réponse
 
-* afficher historique conversation
+- afficher historique conversation
 
 Le système doit :
 
-* conserver les 20 derniers messages
+- conserver les 20 derniers messages
 
-* afficher indicateur "assistant typing"
+- afficher indicateur "assistant typing"
 
 ---
 
@@ -1720,55 +1719,55 @@ Le système doit :
 
 L’utilisateur peut :
 
-* envoyer un message
+- envoyer un message
 
-* recevoir une réponse
+- recevoir une réponse
 
-* voir l’historique
+- voir l’historique
 
 La réponse doit :
 
-* être pédagogique
+- être pédagogique
 
-* éviter les conseils spéculatifs
+- éviter les conseils spéculatifs
 
-* encourager la discipline financière
+- encourager la discipline financière
 
 ---
 
 ## **Edge Cases**
 
-* message vide
+- message vide
 
-* message trop long
+- message trop long
 
-* erreur API IA
+- erreur API IA
 
-* perte de connexion
+- perte de connexion
 
 ---
 
 ## **Data Model**
 
-assistant\_conversations
+assistant_conversations
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- created\_at
+\- created_at
 
-assistant\_messages
+assistant_messages
 
 \- id
 
-\- conversation\_id
+\- conversation_id
 
 \- role (user / assistant)
 
 \- content
 
-\- created\_at
+\- created_at
 
 ---
 
@@ -1776,7 +1775,7 @@ assistant\_messages
 
 Service :
 
-ai\_assistant\_service
+ai_assistant_service
 
 Utilise :
 
@@ -1784,11 +1783,11 @@ Claude API
 
 Prompt système :
 
-* finance éducative
+- finance éducative
 
-* long terme
+- long terme
 
-* éviter trading
+- éviter trading
 
 ---
 
@@ -1837,7 +1836,7 @@ example
 
 risk
 
-simple\_summary
+simple_summary
 
 Exemple :
 
@@ -1857,21 +1856,21 @@ Risks
 
 Chaque explication doit :
 
-* contenir une définition
+- contenir une définition
 
-* contenir un exemple
+- contenir un exemple
 
-* expliquer les risques
+- expliquer les risques
 
 ---
 
 ## **Edge Cases**
 
-* concept trop complexe
+- concept trop complexe
 
-* réponse trop longue
+- réponse trop longue
 
-* sujet non financier
+- sujet non financier
 
 ---
 
@@ -1879,11 +1878,11 @@ Chaque explication doit :
 
 Optionnel :
 
-financial\_concepts
+financial_concepts
 
 \- id
 
-\- concept\_name
+\- concept_name
 
 \- description
 
@@ -1911,11 +1910,11 @@ En tant qu’utilisateur
 
 Le coaching doit utiliser :
 
-* profil financier
+- profil financier
 
-* dépenses
+- dépenses
 
-* objectifs
+- objectifs
 
 ---
 
@@ -1929,11 +1928,11 @@ Le coaching doit utiliser :
 
 Exemples :
 
-* augmenter épargne
+- augmenter épargne
 
-* réduire dépenses
+- réduire dépenses
 
-* investir régulièrement
+- investir régulièrement
 
 ---
 
@@ -1945,17 +1944,17 @@ income
 
 expenses
 
-savings\_rate
+savings_rate
 
 goals
 
 Le coaching peut générer :
 
-recommendation\_type
+recommendation_type
 
 explanation
 
-suggested\_action
+suggested_action
 
 ---
 
@@ -1963,37 +1962,37 @@ suggested\_action
 
 Les recommandations doivent :
 
-* être personnalisées
+- être personnalisées
 
-* être simples
+- être simples
 
-* éviter les conseils spéculatifs
+- éviter les conseils spéculatifs
 
 ---
 
 ## **Edge Cases**
 
-* données utilisateur insuffisantes
+- données utilisateur insuffisantes
 
-* utilisateur sans revenu
+- utilisateur sans revenu
 
-* utilisateur sans objectif
+- utilisateur sans objectif
 
 ---
 
 ## **Data Model**
 
-assistant\_recommendations
+assistant_recommendations
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- recommendation\_type
+\- recommendation_type
 
 \- message
 
-\- created\_at
+\- created_at
 
 ---
 
@@ -2021,9 +2020,9 @@ En tant qu’utilisateur
 
 Les jeunes ont du mal à visualiser :
 
-* la croissance du capital
+- la croissance du capital
 
-* les intérêts composés.
+- les intérêts composés.
 
 ---
 
@@ -2043,17 +2042,17 @@ Les jeunes ont du mal à visualiser :
 
 Inputs :
 
-monthly\_saving
+monthly_saving
 
-monthly\_investment
+monthly_investment
 
-expected\_return
+expected_return
 
-investment\_horizon
+investment_horizon
 
 Calcul :
 
-future\_value \= P \* ((1+r)^n \- 1\) / r
+future_value \= P \* ((1+r)^n \- 1\) / r
 
 ---
 
@@ -2061,23 +2060,23 @@ future\_value \= P \* ((1+r)^n \- 1\) / r
 
 La simulation doit afficher :
 
-* capital final
+- capital final
 
-* capital investi
+- capital investi
 
-* intérêts générés
+- intérêts générés
 
-* graphique évolution
+- graphique évolution
 
 ---
 
 ## **Edge Cases**
 
-* rendement négatif
+- rendement négatif
 
-* horizon très long
+- horizon très long
 
-* investissement \= 0
+- investissement \= 0
 
 ---
 
@@ -2109,11 +2108,11 @@ En tant qu’utilisateur
 
 Comparer :
 
-* épargne simple
+- épargne simple
 
-* investissement
+- investissement
 
-* combinaison.
+- combinaison.
 
 ---
 
@@ -2137,9 +2136,9 @@ Scenario B
 
 Affichage :
 
-capital\_final
+capital_final
 
-capital\_invested
+capital_invested
 
 difference
 
@@ -2149,17 +2148,17 @@ difference
 
 L’utilisateur doit pouvoir :
 
-* modifier les paramètres
+- modifier les paramètres
 
-* voir l’impact immédiatement
+- voir l’impact immédiatement
 
 ---
 
 ## **Edge Cases**
 
-* scénarios identiques
+- scénarios identiques
 
-* valeurs incohérentes
+- valeurs incohérentes
 
 ---
 
@@ -2209,13 +2208,13 @@ Un score simple rend la progression visible.
 
 Score basé sur :
 
-savings\_rate
+savings_rate
 
-goal\_progress
+goal_progress
 
-budget\_control
+budget_control
 
-learning\_progress
+learning_progress
 
 ---
 
@@ -2223,29 +2222,29 @@ learning\_progress
 
 Le score doit :
 
-* évoluer automatiquement
+- évoluer automatiquement
 
-* être expliqué
+- être expliqué
 
 ---
 
 ## **Edge Cases**
 
-* score maximum atteint
+- score maximum atteint
 
-* score très bas
+- score très bas
 
 ---
 
 ## **Data Model**
 
-financial\_scores
+financial_scores
 
-\- user\_id
+\- user_id
 
 \- score
 
-\- updated\_at
+\- updated_at
 
 ---
 
@@ -2269,13 +2268,13 @@ Les badges récompensent les comportements positifs.
 
 Badges :
 
-first\_goal
+first_goal
 
-first\_100\_saved
+first_100_saved
 
-first\_investment\_plan
+first_investment_plan
 
-first\_quiz\_completed
+first_quiz_completed
 
 ---
 
@@ -2283,9 +2282,9 @@ first\_quiz\_completed
 
 Un badge doit être attribué :
 
-* automatiquement
+- automatiquement
 
-* une seule fois
+- une seule fois
 
 ---
 
@@ -2299,13 +2298,13 @@ badges
 
 \- description
 
-user\_badges
+user_badges
 
-\- user\_id
+\- user_id
 
-\- badge\_id
+\- badge_id
 
-\- unlocked\_at
+\- unlocked_at
 
 ---
 
@@ -2333,7 +2332,7 @@ question
 
 options
 
-correct\_answer
+correct_answer
 
 explanation
 
@@ -2343,9 +2342,9 @@ explanation
 
 Après un quiz :
 
-* score affiché
+- score affiché
 
-* explication réponse
+- explication réponse
 
 ---
 
@@ -2359,19 +2358,19 @@ quizzes
 
 \- options
 
-\- correct\_answer
+\- correct_answer
 
-quiz\_results
+quiz_results
 
-\- user\_id
+\- user_id
 
-\- quiz\_id
+\- quiz_id
 
 \- score
 
 ---
 
-# 
+#
 
 # **EPIC 9 — AI Financial Coaching Assistant**
 
@@ -2379,23 +2378,23 @@ quiz\_results
 
 Créer un assistant financier intelligent capable d’aider l’utilisateur à :
 
-* comprendre ses finances
+- comprendre ses finances
 
-* améliorer sa discipline d’épargne
+- améliorer sa discipline d’épargne
 
-* apprendre l’investissement passif
+- apprendre l’investissement passif
 
-* éviter les biais comportementaux
+- éviter les biais comportementaux
 
-* prendre des décisions financières rationnelles.
+- prendre des décisions financières rationnelles.
 
 L’assistant agit comme un **coach éducatif** inspiré de :
 
-* Random Walk Down Wall Street
+- Random Walk Down Wall Street
 
-* Fooled by Randomness
+- Fooled by Randomness
 
-* Thinking Fast and Slow.
+- Thinking Fast and Slow.
 
 ---
 
@@ -2415,13 +2414,13 @@ Les utilisateurs ont rarement une vision claire de leur situation financière.
 
 L’assistant doit analyser :
 
-* revenu
+- revenu
 
-* dépenses
+- dépenses
 
-* objectifs
+- objectifs
 
-* score financier.
+- score financier.
 
 ---
 
@@ -2471,21 +2470,21 @@ Exemples de réponse :
 
 L’assistant doit :
 
-* analyser les dépenses par catégorie
+- analyser les dépenses par catégorie
 
-* identifier les postes de dépenses élevés
+- identifier les postes de dépenses élevés
 
-* expliquer la capacité d’épargne.
+- expliquer la capacité d’épargne.
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur sans revenu
+- utilisateur sans revenu
 
-* aucune dépense enregistrée
+- aucune dépense enregistrée
 
-* données financières incomplètes.
+- données financières incomplètes.
 
 ---
 
@@ -2577,21 +2576,21 @@ Produire :
 
 Le bot doit :
 
-* calculer le temps restant pour atteindre l’objectif
+- calculer le temps restant pour atteindre l’objectif
 
-* proposer des ajustements d’épargne
+- proposer des ajustements d’épargne
 
-* expliquer les résultats.
+- expliquer les résultats.
 
 ---
 
 ## **Edge Cases**
 
-* objectif déjà atteint
+- objectif déjà atteint
 
-* contribution mensuelle nulle
+- contribution mensuelle nulle
 
-* objectif trop ambitieux.
+- objectif trop ambitieux.
 
 ---
 
@@ -2635,19 +2634,19 @@ En tant qu’utilisateur
 
 Les jeunes investisseurs sont exposés à :
 
-* trading
+- trading
 
-* hype investing
+- hype investing
 
-* crypto spéculative.
+- crypto spéculative.
 
 L’assistant doit enseigner :
 
-* ETF
+- ETF
 
-* diversification
+- diversification
 
-* long terme.
+- long terme.
 
 ---
 
@@ -2689,19 +2688,19 @@ Chaque explication contient :
 
 Les réponses doivent être :
 
-* pédagogiques
+- pédagogiques
 
-* simples
+- simples
 
-* neutres.
+- neutres.
 
 ---
 
 ## **Edge Cases**
 
-* question trop technique
+- question trop technique
 
-* sujet non financier.
+- sujet non financier.
 
 ---
 
@@ -2785,19 +2784,19 @@ Calcul :
 
 L’assistant doit :
 
-* exécuter la simulation
+- exécuter la simulation
 
-* expliquer les résultats.
+- expliquer les résultats.
 
 ---
 
 ## **Edge Cases**
 
-* rendement négatif
+- rendement négatif
 
-* horizon très long
+- horizon très long
 
-* investissement nul.
+- investissement nul.
 
 ---
 
@@ -2861,17 +2860,17 @@ L’assistant doit expliquer :
 
 Les explications doivent :
 
-* être simples
+- être simples
 
-* inclure des exemples.
+- inclure des exemples.
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur anxieux
+- utilisateur anxieux
 
-* question sur spéculation.
+- question sur spéculation.
 
 ---
 
@@ -2939,17 +2938,17 @@ Détection :
 
 Lorsqu’un biais est détecté :
 
-* l’assistant explique le biais
+- l’assistant explique le biais
 
-* propose une alternative rationnelle.
+- propose une alternative rationnelle.
 
 ---
 
 ## **Edge Cases**
 
-* détection erronée
+- détection erronée
 
-* message ambigu.
+- message ambigu.
 
 ---
 
@@ -3021,17 +3020,17 @@ Questions :
 
 Le coaching doit :
 
-* encourager la réflexion
+- encourager la réflexion
 
-* éviter les décisions impulsives.
+- éviter les décisions impulsives.
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur impatient
+- utilisateur impatient
 
-* horizon incohérent.
+- horizon incohérent.
 
 ---
 
@@ -3097,19 +3096,19 @@ Le bot peut :
 
 La projection doit afficher :
 
-* capital final
+- capital final
 
-* capital investi
+- capital investi
 
-* gains.
+- gains.
 
 ---
 
 ## **Edge Cases**
 
-* horizon très long
+- horizon très long
 
-* rendement faible.
+- rendement faible.
 
 ---
 
@@ -3173,17 +3172,17 @@ Analyse :
 
 L’assistant doit :
 
-* encourager les progrès
+- encourager les progrès
 
-* valoriser la discipline.
+- valoriser la discipline.
 
 ---
 
 ## **Edge Cases**
 
-* progrès minimes
+- progrès minimes
 
-* utilisateur inactif.
+- utilisateur inactif.
 
 ---
 
@@ -3219,33 +3218,33 @@ En tant qu’utilisateur
 
 Beaucoup d’utilisateurs savent qu’ils veulent :
 
-* voyager
+- voyager
 
-* se créer une épargne de sécurité
+- se créer une épargne de sécurité
 
-* acheter quelque chose
+- acheter quelque chose
 
-* commencer à investir
+- commencer à investir
 
 mais ne savent pas :
 
-* quel montant viser
+- quel montant viser
 
-* sur quelle durée
+- sur quelle durée
 
-* combien épargner par mois
+- combien épargner par mois
 
-* si l’objectif est réaliste.
+- si l’objectif est réaliste.
 
 L’assistant doit donc jouer un rôle de **traducteur d’intention → objectif structuré**.
 
 Cette feature doit être utilisable :
 
-* dans le **tool assistant**
+- dans le **tool assistant**
 
-* dans la **vue Goals**
+- dans la **vue Goals**
 
-* dans les flows d’onboarding ou de coaching.
+- dans les flows d’onboarding ou de coaching.
 
 ---
 
@@ -3267,13 +3266,13 @@ goal becomes available for tracking and coaching
 
 Exemples de déclencheurs :
 
-* “Je veux partir au Japon l’année prochaine”
+- “Je veux partir au Japon l’année prochaine”
 
-* “Je veux me constituer une épargne de secours”
+- “Je veux me constituer une épargne de secours”
 
-* “Je veux économiser pour un ordinateur”
+- “Je veux économiser pour un ordinateur”
 
-* “Je veux commencer à investir”
+- “Je veux commencer à investir”
 
 ---
 
@@ -3285,18 +3284,18 @@ L’assistant doit pouvoir :
 
 Entrées possibles :
 
-free\_text\_goal\_intent  
-goal\_type\_hint  
-target\_date\_hint  
-budget\_hint
+free_text_goal_intent  
+goal_type_hint  
+target_date_hint  
+budget_hint
 
 Exemples :
 
-* “Je veux économiser pour un voyage”
+- “Je veux économiser pour un voyage”
 
-* “Je veux 3000€ d’ici 10 mois”
+- “Je veux 3000€ d’ici 10 mois”
 
-* “Je veux commencer un fonds d’urgence”
+- “Je veux commencer un fonds d’urgence”
 
 ---
 
@@ -3304,24 +3303,24 @@ Exemples :
 
 Le bot doit pouvoir demander :
 
-goal\_name  
-goal\_type  
-target\_amount  
-target\_date  
+goal_name  
+goal_type  
+target_amount  
+target_date  
 priority  
-monthly\_contribution\_optional
+monthly_contribution_optional
 
 Questions typiques :
 
-* Quel est ton objectif exact ?
+- Quel est ton objectif exact ?
 
-* Pour quand souhaites-tu l’atteindre ?
+- Pour quand souhaites-tu l’atteindre ?
 
-* As-tu déjà un montant en tête ?
+- As-tu déjà un montant en tête ?
 
-* Est-ce un objectif prioritaire ?
+- Est-ce un objectif prioritaire ?
 
-* Veux-tu une estimation de l’épargne mensuelle nécessaire ?
+- Veux-tu une estimation de l’épargne mensuelle nécessaire ?
 
 ---
 
@@ -3329,54 +3328,56 @@ Questions typiques :
 
 Le système doit être capable de générer un objet objectif contenant :
 
-goal\_name  
-goal\_type  
-target\_amount  
-target\_date  
-recommended\_monthly\_contribution  
-goal\_feasibility  
-assistant\_summary
+goal_name  
+goal_type  
+target_amount  
+target_date  
+recommended_monthly_contribution  
+goal_feasibility  
+assistant_summary
 
 Exemple :
 
-goal\_name: Voyage au Japon  
-goal\_type: travel  
-target\_amount: 3000  
-target\_date: 2027-06-01  
-recommended\_monthly\_contribution: 250  
-goal\_feasibility: realistic  
-assistant\_summary: Avec 250€ par mois, tu peux atteindre cet objectif en 12 mois.  
+goal_name: Voyage au Japon  
+goal_type: travel  
+target_amount: 3000  
+target_date: 2027-06-01  
+recommended_monthly_contribution: 250  
+goal_feasibility: realistic  
+assistant_summary: Avec 250€ par mois, tu peux atteindre cet objectif en 12 mois.
+
 ---
 
 ### **4\. vérifier la faisabilité de l’objectif**
 
 Le bot doit comparer :
 
-monthly\_income  
-monthly\_expenses  
-saving\_capacity  
-existing\_goals  
-requested\_target\_amount  
-requested\_target\_date
+monthly_income  
+monthly_expenses  
+saving_capacity  
+existing_goals  
+requested_target_amount  
+requested_target_date
 
 Le système doit pouvoir qualifier l’objectif :
 
 realistic  
 challenging  
-unrealistic  
+unrealistic
+
 ---
 
 ### **5\. proposer des ajustements si nécessaire**
 
 Si l’objectif n’est pas réaliste, l’assistant doit proposer :
 
-* une date plus réaliste
+- une date plus réaliste
 
-* une contribution mensuelle plus élevée
+- une contribution mensuelle plus élevée
 
-* un montant cible révisé
+- un montant cible révisé
 
-* une priorité différente.
+- une priorité différente.
 
 ---
 
@@ -3384,11 +3385,11 @@ Si l’objectif n’est pas réaliste, l’assistant doit proposer :
 
 Une fois validé, l’objectif doit être :
 
-* créé dans le module Goals
+- créé dans le module Goals
 
-* visible dans la liste des objectifs
+- visible dans la liste des objectifs
 
-* utilisable pour le suivi, les projections et la motivation.
+- utilisable pour le suivi, les projections et la motivation.
 
 ---
 
@@ -3396,55 +3397,55 @@ Une fois validé, l’objectif doit être :
 
 Depuis la vue Goals, l’utilisateur doit pouvoir :
 
-* accepter la proposition IA
+- accepter la proposition IA
 
-* modifier les champs
+- modifier les champs
 
-* supprimer l’objectif
+- supprimer l’objectif
 
-* demander une reformulation ou optimisation.
+- demander une reformulation ou optimisation.
 
 ---
 
 ## **Acceptance Criteria**
 
-* l’utilisateur peut exprimer un objectif en langage naturel
+- l’utilisateur peut exprimer un objectif en langage naturel
 
-* l’assistant pose des questions si les informations sont incomplètes
+- l’assistant pose des questions si les informations sont incomplètes
 
-* l’assistant propose un objectif structuré
+- l’assistant propose un objectif structuré
 
-* le système calcule la contribution mensuelle recommandée
+- le système calcule la contribution mensuelle recommandée
 
-* l’objectif est marqué comme réaliste / ambitieux / irréaliste
+- l’objectif est marqué comme réaliste / ambitieux / irréaliste
 
-* l’utilisateur peut confirmer ou modifier avant sauvegarde
+- l’utilisateur peut confirmer ou modifier avant sauvegarde
 
-* l’objectif sauvegardé apparaît dans la vue Goals
+- l’objectif sauvegardé apparaît dans la vue Goals
 
-* l’objectif créé devient exploitable par les autres modules.
+- l’objectif créé devient exploitable par les autres modules.
 
 ---
 
 ## **Edge Cases**
 
-* utilisateur sans revenu
+- utilisateur sans revenu
 
-* utilisateur sans capacité d’épargne positive
+- utilisateur sans capacité d’épargne positive
 
-* objectif sans date
+- objectif sans date
 
-* objectif sans montant
+- objectif sans montant
 
-* objectif très ambitieux par rapport au budget
+- objectif très ambitieux par rapport au budget
 
-* plusieurs objectifs concurrents déjà existants
+- plusieurs objectifs concurrents déjà existants
 
-* saisie vague du type “je veux mettre de l’argent de côté”
+- saisie vague du type “je veux mettre de l’argent de côté”
 
-* date cible déjà passée
+- date cible déjà passée
 
-* montant cible nul ou incohérent.
+- montant cible nul ou incohérent.
 
 ---
 
@@ -3454,35 +3455,591 @@ Réutilise principalement :
 
 goals  
 \- id  
-\- user\_id  
-\- goal\_name  
-\- goal\_type  
-\- target\_amount  
-\- target\_date  
-\- monthly\_contribution  
-\- created\_at  
-\- updated\_at
+\- user_id  
+\- goal_name  
+\- goal_type  
+\- target_amount  
+\- target_date  
+\- monthly_contribution  
+\- created_at  
+\- updated_at
 
 Ajouts recommandés si besoin :
 
-goal\_assistant\_sessions  
+goal_assistant_sessions  
 \- id  
-\- user\_id  
-\- raw\_intent  
-\- proposed\_goal\_name  
-\- proposed\_goal\_type  
-\- proposed\_target\_amount  
-\- proposed\_target\_date  
-\- recommended\_monthly\_contribution  
-\- feasibility\_status  
-\- created\_at
+\- user_id  
+\- raw_intent  
+\- proposed_goal_name  
+\- proposed_goal_type  
+\- proposed_target_amount  
+\- proposed_target_date  
+\- recommended_monthly_contribution  
+\- feasibility_status  
+\- created_at
 
-goal\_assistant\_messages  
+goal_assistant_messages  
 \- id  
-\- session\_id  
+\- session_id  
 \- role  
 \- content  
-\- created\_at
+\- created_at
+
+# **FEATURE 9.11 — Expense Creation Assistant**
+
+## **User Story**
+
+En tant qu’utilisateur  
+ Je veux que l’assistant m’aide à enregistrer une dépense  
+ Afin de suivre facilement mes dépenses sans devoir remplir un formulaire manuel.
+
+---
+
+# **Context**
+
+Beaucoup d’utilisateurs :
+
+- oublient d’enregistrer leurs dépenses
+
+- trouvent les formulaires trop longs
+
+- ne savent pas toujours catégoriser leurs achats.
+
+L’assistant doit permettre :
+
+- une **saisie naturelle**
+
+- une **catégorisation automatique**
+
+- un **enregistrement rapide dans le budget**.
+
+Exemples de messages utilisateur :
+
+- “J’ai payé 12€ pour un kebab”
+
+- “J’ai pris un abonnement Netflix à 15€”
+
+- “J’ai payé 80€ d’essence”
+
+- “Restaurant hier soir 32€”
+
+L’assistant agit comme un **parser intelligent de dépenses**.
+
+---
+
+# **User Flow**
+
+user opens assistant  
+ ↓  
+ user writes expense in natural language  
+ ↓  
+ assistant extracts expense data  
+ ↓  
+ assistant proposes structured expense  
+ ↓  
+ user confirms or edits  
+ ↓  
+ expense is saved in Expense module  
+ ↓  
+ budget dashboard is updated
+
+---
+
+# **Functional Requirements**
+
+L’assistant doit pouvoir :
+
+---
+
+## **1 — détecter une intention de création de dépense**
+
+Entrées possibles :
+
+free_text_expense  
+amount_hint  
+category_hint  
+date_hint  
+description_hint
+
+Exemples :
+
+- “J’ai dépensé 20€ en nourriture”
+
+- “Uber 14€”
+
+- “Netflix 15€ par mois”
+
+- “Courses 60€ aujourd’hui”
+
+---
+
+## **2 — extraire automatiquement les informations**
+
+L’IA doit tenter d’extraire :
+
+amount  
+category  
+description  
+expense_date
+
+Exemple :
+
+Input :
+
+“J’ai payé 12€ pour un kebab”
+
+Extraction :
+
+amount: 12  
+category: food  
+description: kebab  
+expense_date: today
+
+---
+
+## **3 — proposer une dépense structurée**
+
+Le système doit générer un objet :
+
+amount  
+category  
+description  
+expense_date  
+assistant_summary
+
+Exemple :
+
+amount: 12  
+category: food  
+description: kebab  
+expense_date: 2026-03-15  
+assistant_summary:  
+"J’ai détecté une dépense de 12€ en nourriture."
+
+---
+
+## **4 — catégorisation automatique**
+
+L’assistant doit mapper la dépense vers les catégories existantes :
+
+housing  
+transport  
+food  
+subscriptions  
+entertainment  
+shopping  
+health  
+other
+
+Exemples :
+
+Uber → transport  
+ Netflix → subscriptions  
+ Restaurant → food  
+ Amazon → shopping
+
+---
+
+## **5 — demander des précisions si nécessaire**
+
+Si les données sont incomplètes, le bot doit poser des questions :
+
+Exemples :
+
+- “Quel est le montant de la dépense ?”
+
+- “Quelle catégorie correspond le mieux ?”
+
+- “Quand cette dépense a-t-elle eu lieu ?”
+
+---
+
+## **6 — confirmer avant sauvegarde**
+
+Avant enregistrement :
+
+assistant:  
+"Tu veux enregistrer une dépense de 15€ pour Netflix aujourd’hui ?"
+
+Options :
+
+confirm  
+edit  
+cancel
+
+---
+
+## **7 — sauvegarder la dépense**
+
+Une fois confirmée :
+
+- la dépense est créée dans `expenses`
+
+- les statistiques sont recalculées
+
+- le dashboard est mis à jour.
+
+---
+
+# **Acceptance Criteria**
+
+- l’utilisateur peut saisir une dépense en langage naturel
+
+- l’assistant détecte le montant automatiquement
+
+- l’assistant propose une catégorie
+
+- l’utilisateur peut corriger les informations
+
+- la dépense est enregistrée dans `expenses`
+
+- le budget est recalculé immédiatement.
+
+---
+
+# **Edge Cases**
+
+- montant absent
+
+- montant incohérent
+
+- catégorie inconnue
+
+- message ambigu
+
+- plusieurs dépenses dans une phrase
+
+- dépense future
+
+- devise différente
+
+- message du type :
+
+“J’ai dépensé un peu d’argent”
+
+---
+
+# **Data Model**
+
+Réutilise la table existante :
+
+expenses
+
+id  
+user_id  
+amount  
+category  
+description  
+expense_date  
+created_at
+
+Tables optionnelles :
+
+expense_assistant_sessions
+
+id  
+user_id  
+raw_message  
+detected_amount  
+detected_category  
+detected_description  
+detected_date  
+created_at  
+expense_assistant_messages
+
+id  
+session_id  
+role  
+content  
+created_at
+
+---
+
+# **Technical Notes**
+
+Service principal :
+
+expense_creation_assistant_service
+
+Fonctions :
+
+detect_expense_intent()  
+extract_expense_entities()  
+categorize_expense()  
+generate_expense_proposal()  
+save_expense()
+
+Pipeline :
+
+user_message  
+ ↓  
+intent_detection  
+ ↓  
+entity_extraction  
+ ↓  
+category_mapping  
+ ↓  
+expense_proposal  
+ ↓  
+user_confirmation  
+ ↓  
+expense_saved
+
+Technologies possibles :
+
+- LLM extraction
+
+- regex fallback pour montants
+
+- dictionnaire catégories.
+
+# **FEATURE 9.12 — Personal Financial Projection Assistant**
+
+## **User Story**
+
+En tant qu’utilisateur  
+ Je veux que l’assistant projette ma situation financière future  
+ Afin de comprendre l’impact de mon épargne et de mes investissements dans le temps.
+
+---
+
+# **Context**
+
+Les utilisateurs ont du mal à comprendre :
+
+- l’impact du temps
+
+- les intérêts composés
+
+- l’effet d’une épargne régulière.
+
+L’assistant doit permettre de poser des questions comme :
+
+- “Combien j’aurai dans 10 ans si j’épargne 200€ par mois ?”
+
+- “Si j’investis 300€ par mois à 7%, combien j’aurai à 40 ans ?”
+
+- “Que se passe-t-il si j’augmente mon épargne de 50€ ?”
+
+L’objectif est de transformer **des concepts abstraits en projections concrètes**.
+
+---
+
+# **User Flow**
+
+user opens assistant  
+ ↓  
+ user asks a projection question  
+ ↓  
+ assistant extracts parameters  
+ ↓  
+ assistant runs financial projection  
+ ↓  
+ assistant explains results  
+ ↓  
+ assistant proposes alternative scenarios
+
+---
+
+# **Functional Requirements**
+
+L’assistant doit pouvoir :
+
+---
+
+## **1 — détecter une intention de projection financière**
+
+Entrées possibles :
+
+projection_intent  
+investment_question  
+future_wealth_question  
+retirement_projection
+
+Exemples :
+
+- “Combien j’aurai dans 15 ans ?”
+
+- “Si j’investis 200€ par mois à 6%”
+
+- “Que se passe-t-il si j’épargne plus ?”
+
+---
+
+## **2 — extraire les paramètres financiers**
+
+L’assistant doit identifier :
+
+monthly_saving  
+monthly_investment  
+interest_rate  
+investment_horizon  
+initial_capital
+
+Exemple :
+
+Input :
+
+“Si j’investis 300€ par mois pendant 20 ans à 7%”
+
+Extraction :
+
+monthly_investment: 300  
+interest_rate: 0.07  
+investment_horizon: 20  
+initial_capital: 0
+
+---
+
+## **3 — récupérer les données utilisateur si nécessaires**
+
+Si l’utilisateur ne donne pas tous les paramètres :
+
+le système peut utiliser :
+
+financial_profile  
+monthly_income  
+expenses  
+saving_rate  
+goals
+
+Exemple :
+
+“Si je continue comme aujourd’hui”
+
+---
+
+## **4 — exécuter la simulation financière**
+
+Calcul principal :
+
+future_value \= P \* ((1+r)^n \- 1\) / r
+
+Variables :
+
+P \= monthly contribution  
+r \= monthly interest rate  
+n \= number of months
+
+Le système doit calculer :
+
+total_invested  
+future_value  
+interest_generated
+
+---
+
+## **5 — générer une explication pédagogique**
+
+L’assistant doit expliquer :
+
+- capital investi
+
+- intérêts générés
+
+- importance du temps.
+
+Exemple :
+
+“Si tu investis 300€ par mois pendant 20 ans avec un rendement moyen de 7%, tu investiras 72 000€ et ton capital pourrait atteindre environ 156 000€.  
+ Les intérêts composés représentent donc plus de 84 000€.”
+
+---
+
+## **6 — proposer des scénarios alternatifs**
+
+Le système doit pouvoir générer :
+
+scenario_increase_saving  
+scenario_longer_horizon  
+scenario_higher_return
+
+Exemple :
+
+“Si tu augmentes ton investissement à 400€ par mois, ton capital pourrait atteindre 208 000€.”
+
+---
+
+## **7 — afficher une projection graphique**
+
+L’assistant peut envoyer un payload pour afficher :
+
+projection_chart  
+capital_curve  
+interest_curve
+
+Utilisé par le composant :
+
+## WealthProjectionChart
+
+# **Acceptance Criteria**
+
+- l’utilisateur peut poser une question de projection en langage naturel
+
+- l’assistant extrait automatiquement les paramètres
+
+- la projection est calculée correctement
+
+- l’assistant explique les résultats
+
+- l’utilisateur peut tester d’autres scénarios
+
+- un graphique peut être affiché.
+
+---
+
+# **Edge Cases**
+
+- rendement négatif
+
+- horizon très long (\> 50 ans)
+
+- montant mensuel nul
+
+- paramètres incohérents
+
+- utilisateur sans revenu
+
+- utilisateur sans capacité d’épargne
+
+- question vague :
+
+“Combien je serai riche ?”
+
+---
+
+# **Data Model**
+
+Pas obligatoire (simulation dynamique).
+
+Optionnel :
+
+projection_sessions
+
+id  
+user_id  
+monthly_investment  
+interest_rate  
+investment_horizon  
+initial_capital  
+future_value  
+created_at
+
+---
+
+# **Technical Notes**
+
+Service :
+
+financial_projection_assistant_service
+
+Fonctions :
+
+detect_projection_intent()  
+extract_projection_parameters()  
+calculate_future_value()  
+generate_projection_explanation()  
+generate_scenario_variants()
 
 # **EPIC 10 — Security & Access Control**
 
@@ -3490,13 +4047,13 @@ goal\_assistant\_messages
 
 Sécuriser l’application pour un usage réel :
 
-* authentification
+- authentification
 
-* gestion des rôles
+- gestion des rôles
 
-* protection API
+- protection API
 
-* protection données.
+- protection données.
 
 ---
 
@@ -3524,38 +4081,39 @@ session active
 
 ### **Functional Requirements**
 
-* signup
+- signup
 
-* login
+- login
 
-* logout
+- logout
 
-* password hashing
+- password hashing
 
-* session token.
+- session token.
 
 ### **Acceptance Criteria**
 
-* mot de passe hashé
+- mot de passe hashé
 
-* token sécurisé
+- token sécurisé
 
-* session expirée automatiquement.
+- session expirée automatiquement.
 
 ### **Data Model**
 
 users  
 \- id  
 \- email  
-\- password\_hash  
+\- password_hash  
 \- role  
-\- created\_at
+\- created_at
 
 ### **Technical Notes**
 
 JWT  
 bcrypt  
-Quarkus security  
+Quarkus security
+
 ---
 
 # **FEATURE 10.2 — Role Based Access Control**
@@ -3575,27 +4133,27 @@ ADMIN
 
 USER
 
-* utiliser l’app
+- utiliser l’app
 
-* créer profil
+- créer profil
 
-* simulations
+- simulations
 
-* IA.
+- IA.
 
 ADMIN
 
-* accès back-office
+- accès back-office
 
-* gestion utilisateurs
+- gestion utilisateurs
 
-* gestion contenu.
+- gestion contenu.
 
 ### **Acceptance Criteria**
 
-* endpoints admin protégés
+- endpoints admin protégés
 
-* accès refusé si rôle incorrect.
+- accès refusé si rôle incorrect.
 
 ---
 
@@ -3609,17 +4167,17 @@ En tant que système
 
 ### **Functional Requirements**
 
-* validation token JWT
+- validation token JWT
 
-* middleware auth
+- middleware auth
 
-* protection endpoints sensibles.
+- protection endpoints sensibles.
 
 ### **Edge Cases**
 
-* token expiré
+- token expiré
 
-* token invalide.
+- token invalide.
 
 ---
 
@@ -3640,7 +4198,8 @@ API requests
 ### **Technical Notes**
 
 Quarkus rate limiter  
-Redis  
+Redis
+
 ---
 
 # **FEATURE 10.5 — Data Protection**
@@ -3652,11 +4211,11 @@ En tant qu’utilisateur
 
 ### **Functional Requirements**
 
-* encryption données sensibles
+- encryption données sensibles
 
-* suppression compte
+- suppression compte
 
-* anonymisation analytics.
+- anonymisation analytics.
 
 ---
 
@@ -3686,8 +4245,7 @@ stack traces
 
 ### **Technical Notes**
 
-Sentry  
----
+## Sentry
 
 # **FEATURE 11.2 — Application Logging**
 
@@ -3707,7 +4265,8 @@ errors
 ### **Tools**
 
 ELK stack  
-Loki  
+Loki
+
 ---
 
 # **FEATURE 11.3 — System Metrics**
@@ -3728,7 +4287,8 @@ memory usage
 ### **Tools**
 
 Prometheus  
-Grafana  
+Grafana
+
 ---
 
 # **FEATURE 11.4 — Product Analytics**
@@ -3740,16 +4300,15 @@ En tant que product manager
 
 ### **Events**
 
-user\_signup  
-profile\_created  
-goal\_created  
-simulation\_run  
-ai\_question\_asked
+user_signup  
+profile_created  
+goal_created  
+simulation_run  
+ai_question_asked
 
 ### **Tool**
 
-Posthog  
----
+## Posthog
 
 # **FEATURE 11.5 — AI Usage Monitoring**
 
@@ -3763,7 +4322,8 @@ En tant que développeur
 AI calls  
 tokens usage  
 AI latency  
-AI errors  
+AI errors
+
 ---
 
 # **EPIC 12 — Admin Back-Office**
@@ -3783,11 +4343,11 @@ En tant qu’administrateur
 
 ### **Functional Requirements**
 
-* login admin
+- login admin
 
-* session admin
+- session admin
 
-* logout.
+- logout.
 
 ---
 
@@ -3805,7 +4365,8 @@ Admin peut :
 voir utilisateurs  
 suspendre compte  
 supprimer compte  
-réinitialiser accès  
+réinitialiser accès
+
 ---
 
 # **FEATURE 12.3 — User Activity Dashboard**
@@ -3820,7 +4381,8 @@ En tant qu’administrateur
 nombre utilisateurs  
 DAU  
 simulations  
-questions IA  
+questions IA
+
 ---
 
 # **FEATURE 12.4 — Content Management**
@@ -3834,7 +4396,8 @@ En tant qu’administrateur
 
 modifier textes  
 modifier modules éducatifs  
-modifier prompts IA  
+modifier prompts IA
+
 ---
 
 # **FEATURE 12.5 — System Health Dashboard**
@@ -3849,7 +4412,8 @@ En tant qu’administrateur
 system status  
 error rate  
 AI usage  
-API latency  
+API latency
+
 ---
 
 # **EPIC 13 — Plans, Entitlements & Usage Control**
@@ -3858,21 +4422,21 @@ API latency
 
 Permettre à l’application de :
 
-* définir des plans d’utilisation
+- définir des plans d’utilisation
 
-* limiter l’usage des fonctionnalités selon l’offre
+- limiter l’usage des fonctionnalités selon l’offre
 
-* suivre la consommation utilisateur
+- suivre la consommation utilisateur
 
-* bloquer ou restreindre l’accès lorsque les quotas sont atteints.
+- bloquer ou restreindre l’accès lorsque les quotas sont atteints.
 
 Ce système permet de :
 
-* contrôler les coûts (notamment IA)
+- contrôler les coûts (notamment IA)
 
-* préparer une monétisation future
+- préparer une monétisation future
 
-* gérer les accès aux fonctionnalités premium.
+- gérer les accès aux fonctionnalités premium.
 
 ---
 
@@ -3890,17 +4454,17 @@ En tant que système
 
 L’application proposera plusieurs niveaux d’accès :
 
-* plan gratuit
+- plan gratuit
 
-* plan premium
+- plan premium
 
-* plan administrateur.
+- plan administrateur.
 
 Chaque plan définit :
 
-* les fonctionnalités accessibles
+- les fonctionnalités accessibles
 
-* les quotas d’utilisation.
+- les quotas d’utilisation.
 
 ---
 
@@ -3930,11 +4494,11 @@ feature allowed / restricted
 
 Chaque utilisateur doit avoir :
 
-* un plan actif
+- un plan actif
 
-* une date de début du plan
+- une date de début du plan
 
-* une date de fin optionnelle.
+- une date de fin optionnelle.
 
 Plans possibles :
 
@@ -3946,29 +4510,29 @@ ADMIN
 
 Chaque plan définit :
 
-* accès aux fonctionnalités
+- accès aux fonctionnalités
 
-* quotas d’usage.
+- quotas d’usage.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un utilisateur possède un plan actif
+- un utilisateur possède un plan actif
 
-* le plan peut être modifié
+- le plan peut être modifié
 
-* le plan détermine les permissions.
+- le plan détermine les permissions.
 
 ---
 
 ### **Edge Cases**
 
-* utilisateur sans plan
+- utilisateur sans plan
 
-* plan expiré
+- plan expiré
 
-* plan modifié pendant une session.
+- plan modifié pendant une session.
 
 ---
 
@@ -3982,17 +4546,17 @@ plans
 
 \- description
 
-user\_plans
+user_plans
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- plan\_id
+\- plan_id
 
-\- start\_date
+\- start_date
 
-\- end\_date
+\- end_date
 
 ---
 
@@ -4018,19 +4582,19 @@ En tant que système
 
 Certaines fonctionnalités peuvent être :
 
-* gratuites
+- gratuites
 
-* limitées
+- limitées
 
-* premium.
+- premium.
 
 Exemples :
 
-* simulation financière avancée
+- simulation financière avancée
 
-* assistant IA illimité
+- assistant IA illimité
 
-* projections avancées.
+- projections avancées.
 
 ---
 
@@ -4056,33 +4620,33 @@ feature allowed / denied
 
 Chaque fonctionnalité doit être associée à :
 
-* une permission
+- une permission
 
-* un plan minimum requis.
+- un plan minimum requis.
 
 Exemples :
 
-AI\_ASSISTANT
+AI_ASSISTANT
 
-INVESTMENT\_SIMULATION
+INVESTMENT_SIMULATION
 
-ADVANCED\_PROJECTION
+ADVANCED_PROJECTION
 
 ---
 
 ### **Acceptance Criteria**
 
-* les fonctionnalités premium sont bloquées pour les utilisateurs FREE
+- les fonctionnalités premium sont bloquées pour les utilisateurs FREE
 
-* les fonctionnalités autorisées sont accessibles normalement.
+- les fonctionnalités autorisées sont accessibles normalement.
 
 ---
 
 ### **Edge Cases**
 
-* feature mal configurée
+- feature mal configurée
 
-* plan supprimé.
+- plan supprimé.
 
 ---
 
@@ -4094,11 +4658,11 @@ features
 
 \- name
 
-plan\_features
+plan_features
 
-\- plan\_id
+\- plan_id
 
-\- feature\_id
+\- feature_id
 
 ---
 
@@ -4122,11 +4686,11 @@ En tant que système
 
 Certaines fonctionnalités sont coûteuses :
 
-* appels IA
+- appels IA
 
-* simulations
+- simulations
 
-* projections.
+- projections.
 
 Chaque plan doit définir un quota.
 
@@ -4134,15 +4698,15 @@ Exemple :
 
 FREE
 
-* 5 questions IA / jour
+- 5 questions IA / jour
 
-* 10 simulations / jour.
+- 10 simulations / jour.
 
 PREMIUM
 
-* 100 questions IA / jour
+- 100 questions IA / jour
 
-* simulations illimitées.
+- simulations illimitées.
 
 ---
 
@@ -4166,49 +4730,49 @@ if quota exceeded → block
 
 Le système doit :
 
-* compter l’usage
+- compter l’usage
 
-* comparer au quota
+- comparer au quota
 
-* bloquer si quota dépassé.
+- bloquer si quota dépassé.
 
 ---
 
 ### **Acceptance Criteria**
 
-* compteur d’usage mis à jour
+- compteur d’usage mis à jour
 
-* blocage si limite atteinte
+- blocage si limite atteinte
 
-* message utilisateur clair.
+- message utilisateur clair.
 
 ---
 
 ### **Edge Cases**
 
-* compteur corrompu
+- compteur corrompu
 
-* reset quota incorrect
+- reset quota incorrect
 
-* appels simultanés.
+- appels simultanés.
 
 ---
 
 ### **Data Model**
 
-usage\_records
+usage_records
 
 \- id
 
-\- user\_id
+\- user_id
 
 \- feature
 
-\- usage\_count
+\- usage_count
 
-\- period\_start
+\- period_start
 
-\- period\_end
+\- period_end
 
 ---
 
@@ -4234,9 +4798,9 @@ En tant que système
 
 Les quotas peuvent être :
 
-* journaliers
+- journaliers
 
-* mensuels.
+- mensuels.
 
 ---
 
@@ -4258,31 +4822,31 @@ user regains usage allowance
 
 Le système doit :
 
-* définir la période du quota
+- définir la période du quota
 
-* réinitialiser automatiquement les compteurs.
+- réinitialiser automatiquement les compteurs.
 
 ---
 
 ### **Acceptance Criteria**
 
-* reset automatique
+- reset automatique
 
-* reset correct par période.
+- reset correct par période.
 
 ---
 
 ### **Edge Cases**
 
-* reset multiple
+- reset multiple
 
-* timezone utilisateurs.
+- timezone utilisateurs.
 
 ---
 
 ### **Data Model**
 
-quota\_policies
+quota_policies
 
 \- feature
 
@@ -4336,27 +4900,27 @@ restriction message displayed
 
 Le système doit afficher :
 
-* quota atteint
+- quota atteint
 
-* fonctionnalité premium
+- fonctionnalité premium
 
-* suggestion d’upgrade.
+- suggestion d’upgrade.
 
 ---
 
 ### **Acceptance Criteria**
 
-* message clair
+- message clair
 
-* aucune erreur système visible.
+- aucune erreur système visible.
 
 ---
 
 ### **Edge Cases**
 
-* message incorrect
+- message incorrect
 
-* feature non reconnue.
+- feature non reconnue.
 
 ---
 
@@ -4374,21 +4938,21 @@ API response codes
 
 Permettre à l’application de :
 
-* proposer des abonnements payants
+- proposer des abonnements payants
 
-* gérer les upgrades et downgrades
+- gérer les upgrades et downgrades
 
-* encaisser les paiements de façon sécurisée
+- encaisser les paiements de façon sécurisée
 
-* synchroniser l’état des abonnements avec les plans utilisateur
+- synchroniser l’état des abonnements avec les plans utilisateur
 
-* offrir un portail de gestion de facturation.
+- offrir un portail de gestion de facturation.
 
 Cette epic complète l’EPIC 13 :
 
-* **EPIC 13** \= logique produit d’accès, quotas, entitlements
+- **EPIC 13** \= logique produit d’accès, quotas, entitlements
 
-* **EPIC 14** \= logique paiement, abonnement, facturation via Stripe
+- **EPIC 14** \= logique paiement, abonnement, facturation via Stripe
 
 ---
 
@@ -4434,57 +4998,57 @@ user can continue checkout
 
 Le système doit :
 
-* créer un customer Stripe à la première entrée dans le parcours payant
+- créer un customer Stripe à la première entrée dans le parcours payant
 
-* stocker le `stripe_customer_id`
+- stocker le `stripe_customer_id`
 
-* réutiliser ce customer pour les paiements futurs.
+- réutiliser ce customer pour les paiements futurs.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un customer Stripe est créé une seule fois par utilisateur
+- un customer Stripe est créé une seule fois par utilisateur
 
-* le customer est lié au bon utilisateur
+- le customer est lié au bon utilisateur
 
-* le `stripe_customer_id` est stocké en base.
+- le `stripe_customer_id` est stocké en base.
 
 ---
 
 ### **Edge Cases**
 
-* customer déjà existant
+- customer déjà existant
 
-* erreur API Stripe
+- erreur API Stripe
 
-* utilisateur supprimé localement mais présent dans Stripe.
+- utilisateur supprimé localement mais présent dans Stripe.
 
 ---
 
 ### **Data Model**
 
-billing\_customers
+billing_customers
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- stripe\_customer\_id
+\- stripe_customer_id
 
-\- created\_at
+\- created_at
 
-\- updated\_at
+\- updated_at
 
 ---
 
 ### **Technical Notes**
 
-* création côté backend uniquement
+- création côté backend uniquement
 
-* ne jamais créer le customer depuis le frontend
+- ne jamais créer le customer depuis le frontend
 
-* utiliser l’email utilisateur comme attribut Stripe principal.
+- utiliser l’email utilisateur comme attribut Stripe principal.
 
 ---
 
@@ -4534,13 +5098,13 @@ user returns to app
 
 Le système doit permettre :
 
-* sélection d’un plan
+- sélection d’un plan
 
-* création d’une Stripe Checkout Session
+- création d’une Stripe Checkout Session
 
-* redirection vers Stripe
+- redirection vers Stripe
 
-* retour succès / annulation.
+- retour succès / annulation.
 
 Plans ciblés :
 
@@ -4554,25 +5118,25 @@ PRO (optional future)
 
 ### **Acceptance Criteria**
 
-* l’utilisateur peut lancer un checkout
+- l’utilisateur peut lancer un checkout
 
-* le checkout correspond au bon plan
+- le checkout correspond au bon plan
 
-* un paiement réussi active l’abonnement
+- un paiement réussi active l’abonnement
 
-* un paiement annulé ne modifie pas le plan.
+- un paiement annulé ne modifie pas le plan.
 
 ---
 
 ### **Edge Cases**
 
-* session Stripe expirée
+- session Stripe expirée
 
-* paiement refusé
+- paiement refusé
 
-* double clic sur upgrade
+- double clic sur upgrade
 
-* plan inexistant.
+- plan inexistant.
 
 ---
 
@@ -4582,35 +5146,35 @@ Réutilise :
 
 plans
 
-user\_plans
+user_plans
 
-billing\_customers
+billing_customers
 
 Ajout :
 
-stripe\_checkout\_sessions
+stripe_checkout_sessions
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- stripe\_session\_id
+\- stripe_session_id
 
-\- plan\_code
+\- plan_code
 
 \- status
 
-\- created\_at
+\- created_at
 
 ---
 
 ### **Technical Notes**
 
-* Stripe Checkout recommandé pour MVP
+- Stripe Checkout recommandé pour MVP
 
-* backend responsable de créer la session
+- backend responsable de créer la session
 
-* frontend ne manipule jamais les secrets Stripe.
+- frontend ne manipule jamais les secrets Stripe.
 
 ---
 
@@ -4628,13 +5192,13 @@ En tant que système
 
 Le plan utilisateur dans FinMate doit toujours être aligné avec l’état d’abonnement Stripe :
 
-* actif
+- actif
 
-* annulé
+- annulé
 
-* impayé
+- impayé
 
-* expiré.
+- expiré.
 
 ---
 
@@ -4674,37 +5238,37 @@ customer.subscription.deleted
 
 invoice.paid
 
-invoice.payment\_failed
+invoice.payment_failed
 
 Le backend doit :
 
-* valider la signature du webhook
+- valider la signature du webhook
 
-* mettre à jour le statut d’abonnement
+- mettre à jour le statut d’abonnement
 
-* mettre à jour le plan utilisateur.
+- mettre à jour le plan utilisateur.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un abonnement actif active le plan premium
+- un abonnement actif active le plan premium
 
-* un abonnement annulé ou expiré retire les accès premium
+- un abonnement annulé ou expiré retire les accès premium
 
-* un paiement échoué met à jour le statut correctement.
+- un paiement échoué met à jour le statut correctement.
 
 ---
 
 ### **Edge Cases**
 
-* webhook reçu plusieurs fois
+- webhook reçu plusieurs fois
 
-* webhook reçu dans le désordre
+- webhook reçu dans le désordre
 
-* événement Stripe inconnu
+- événement Stripe inconnu
 
-* erreur temporaire backend.
+- erreur temporaire backend.
 
 ---
 
@@ -4714,49 +5278,49 @@ subscriptions
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- stripe\_subscription\_id
+\- stripe_subscription_id
 
-\- stripe\_customer\_id
+\- stripe_customer_id
 
-\- stripe\_price\_id
+\- stripe_price_id
 
 \- status
 
-\- current\_period\_start
+\- current_period_start
 
-\- current\_period\_end
+\- current_period_end
 
-\- cancel\_at\_period\_end
+\- cancel_at_period_end
 
-\- created\_at
+\- created_at
 
-\- updated\_at
+\- updated_at
 
-billing\_events
+billing_events
 
 \- id
 
-\- stripe\_event\_id
+\- stripe_event_id
 
-\- event\_type
+\- event_type
 
 \- processed
 
-\- processed\_at
+\- processed_at
 
-\- created\_at
+\- created_at
 
 ---
 
 ### **Technical Notes**
 
-* webhook idempotent obligatoire
+- webhook idempotent obligatoire
 
-* vérifier la signature Stripe
+- vérifier la signature Stripe
 
-* ne jamais se baser uniquement sur le retour frontend après paiement.
+- ne jamais se baser uniquement sur le retour frontend après paiement.
 
 ---
 
@@ -4774,13 +5338,13 @@ En tant qu’utilisateur
 
 L’utilisateur doit pouvoir :
 
-* voir ses factures
+- voir ses factures
 
-* mettre à jour sa carte
+- mettre à jour sa carte
 
-* annuler son abonnement
+- annuler son abonnement
 
-* reprendre son abonnement.
+- reprendre son abonnement.
 
 ---
 
@@ -4814,31 +5378,31 @@ user returns to app
 
 Le système doit permettre :
 
-* accès au portail Stripe
+- accès au portail Stripe
 
-* retour sécurisé dans l’application
+- retour sécurisé dans l’application
 
-* consultation de l’état courant d’abonnement.
+- consultation de l’état courant d’abonnement.
 
 ---
 
 ### **Acceptance Criteria**
 
-* l’utilisateur peut ouvrir son portail de facturation
+- l’utilisateur peut ouvrir son portail de facturation
 
-* l’utilisateur peut modifier son moyen de paiement
+- l’utilisateur peut modifier son moyen de paiement
 
-* l’utilisateur peut annuler ou gérer son abonnement.
+- l’utilisateur peut annuler ou gérer son abonnement.
 
 ---
 
 ### **Edge Cases**
 
-* customer Stripe manquant
+- customer Stripe manquant
 
-* abonnement inexistant
+- abonnement inexistant
 
-* session portail expirée.
+- session portail expirée.
 
 ---
 
@@ -4846,7 +5410,7 @@ Le système doit permettre :
 
 Réutilise :
 
-billing\_customers
+billing_customers
 
 subscriptions
 
@@ -4854,9 +5418,9 @@ subscriptions
 
 ### **Technical Notes**
 
-* utiliser Stripe Billing Portal pour gagner du temps
+- utiliser Stripe Billing Portal pour gagner du temps
 
-* parfait pour MVP et début de production.
+- parfait pour MVP et début de production.
 
 ---
 
@@ -4874,11 +5438,11 @@ En tant qu’utilisateur
 
 L’utilisateur peut vouloir :
 
-* passer de FREE à PREMIUM
+- passer de FREE à PREMIUM
 
-* revenir de PREMIUM à FREE
+- revenir de PREMIUM à FREE
 
-* changer d’offre future.
+- changer d’offre future.
 
 ---
 
@@ -4904,33 +5468,33 @@ FinMate plan is synchronized
 
 Le système doit gérer :
 
-* upgrade immédiat
+- upgrade immédiat
 
-* downgrade en fin de période
+- downgrade en fin de période
 
-* annulation d’abonnement
+- annulation d’abonnement
 
-* synchronisation des droits.
+- synchronisation des droits.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un upgrade active rapidement les nouveaux droits
+- un upgrade active rapidement les nouveaux droits
 
-* un downgrade retire les droits au bon moment
+- un downgrade retire les droits au bon moment
 
-* l’état affiché dans l’app est cohérent.
+- l’état affiché dans l’app est cohérent.
 
 ---
 
 ### **Edge Cases**
 
-* changement pendant une facture impayée
+- changement pendant une facture impayée
 
-* changement vers un plan supprimé
+- changement vers un plan supprimé
 
-* désynchronisation Stripe / app.
+- désynchronisation Stripe / app.
 
 ---
 
@@ -4940,7 +5504,7 @@ Réutilise :
 
 subscriptions
 
-user\_plans
+user_plans
 
 plans
 
@@ -4948,11 +5512,11 @@ plans
 
 ### **Technical Notes**
 
-* la logique produit d’accès reste dans EPIC 13
+- la logique produit d’accès reste dans EPIC 13
 
-* Stripe gère la facturation
+- Stripe gère la facturation
 
-* FinMate gère les entitlements.
+- FinMate gère les entitlements.
 
 ---
 
@@ -4970,13 +5534,13 @@ En tant qu’utilisateur
 
 L’utilisateur doit pouvoir voir clairement :
 
-* son plan actuel
+- son plan actuel
 
-* le statut de son abonnement
+- le statut de son abonnement
 
-* sa date de renouvellement
+- sa date de renouvellement
 
-* son accès premium.
+- son accès premium.
 
 ---
 
@@ -4998,35 +5562,35 @@ subscription status is displayed
 
 Afficher :
 
-current\_plan
+current_plan
 
-subscription\_status
+subscription_status
 
-renewal\_date
+renewal_date
 
-cancel\_at\_period\_end
+cancel_at_period_end
 
-payment\_issue\_flag
+payment_issue_flag
 
 ---
 
 ### **Acceptance Criteria**
 
-* la vue billing affiche l’offre active
+- la vue billing affiche l’offre active
 
-* la date de renouvellement est visible
+- la date de renouvellement est visible
 
-* un problème de paiement est visible.
+- un problème de paiement est visible.
 
 ---
 
 ### **Edge Cases**
 
-* utilisateur gratuit sans abonnement
+- utilisateur gratuit sans abonnement
 
-* période d’essai
+- période d’essai
 
-* paiement échoué.
+- paiement échoué.
 
 ---
 
@@ -5036,15 +5600,15 @@ Réutilise :
 
 subscriptions
 
-user\_plans
+user_plans
 
 ---
 
 ### **Technical Notes**
 
-* page dédiée recommandée : `Account > Billing`
+- page dédiée recommandée : `Account > Billing`
 
-* affichage clair et non technique.
+- affichage clair et non technique.
 
 ---
 
@@ -5062,11 +5626,11 @@ En tant que système
 
 Un paiement peut échouer pour plusieurs raisons :
 
-* carte expirée
+- carte expirée
 
-* fonds insuffisants
+- fonds insuffisants
 
-* moyen de paiement invalide.
+- moyen de paiement invalide.
 
 L’utilisateur doit être informé et l’accès doit être ajusté correctement.
 
@@ -5098,67 +5662,66 @@ user sees payment problem message
 
 Le système doit :
 
-* détecter les paiements échoués
+- détecter les paiements échoués
 
-* enregistrer l’incident
+- enregistrer l’incident
 
-* afficher un message clair à l’utilisateur
+- afficher un message clair à l’utilisateur
 
-* ajuster les droits selon la politique produit.
+- ajuster les droits selon la politique produit.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un échec de paiement est visible
+- un échec de paiement est visible
 
-* l’utilisateur peut corriger son moyen de paiement
+- l’utilisateur peut corriger son moyen de paiement
 
-* l’état produit reste cohérent.
+- l’état produit reste cohérent.
 
 ---
 
 ### **Edge Cases**
 
-* multiples échecs de paiement
+- multiples échecs de paiement
 
-* webhook manquant
+- webhook manquant
 
-* paiement régularisé plus tard.
+- paiement régularisé plus tard.
 
 ---
 
 ### **Data Model**
 
-billing\_issues
+billing_issues
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- stripe\_invoice\_id
+\- stripe_invoice_id
 
-\- issue\_type
+\- issue_type
 
 \- status
 
-\- created\_at
+\- created_at
 
-\- resolved\_at
+\- resolved_at
 
 ---
 
 ### **Technical Notes**
 
-* important pour la cohérence avec EPIC 13
+- important pour la cohérence avec EPIC 13
 
-* prévoir messages UX clairs :
+- prévoir messages UX clairs :
+  - paiement échoué
 
-  * paiement échoué
+  - mettre à jour la carte
 
-  * mettre à jour la carte
-
-  * accès premium en attente.
+  - accès premium en attente.
 
 ---
 
@@ -5204,31 +5767,31 @@ subscription continues or premium access stops
 
 Le système doit gérer :
 
-* durée d’essai
+- durée d’essai
 
-* activation des droits premium pendant l’essai
+- activation des droits premium pendant l’essai
 
-* conversion automatique ou fin d’essai.
+- conversion automatique ou fin d’essai.
 
 ---
 
 ### **Acceptance Criteria**
 
-* un utilisateur en essai a accès aux fonctionnalités premium
+- un utilisateur en essai a accès aux fonctionnalités premium
 
-* la fin d’essai est correctement gérée
+- la fin d’essai est correctement gérée
 
-* la transition trial → paid ou trial → free est cohérente.
+- la transition trial → paid ou trial → free est cohérente.
 
 ---
 
 ### **Edge Cases**
 
-* utilisateur qui tente plusieurs trials
+- utilisateur qui tente plusieurs trials
 
-* trial interrompu
+- trial interrompu
 
-* paiement absent à fin d’essai.
+- paiement absent à fin d’essai.
 
 ---
 
@@ -5236,17 +5799,17 @@ Le système doit gérer :
 
 Ajout possible :
 
-subscription\_trials
+subscription_trials
 
 \- id
 
-\- user\_id
+\- user_id
 
-\- stripe\_subscription\_id
+\- stripe_subscription_id
 
-\- trial\_start
+\- trial_start
 
-\- trial\_end
+\- trial_end
 
 \- status
 
@@ -5254,9 +5817,9 @@ subscription\_trials
 
 ### **Technical Notes**
 
-* optionnelle pour MVP
+- optionnelle pour MVP
 
-* très utile si tu veux lancer une bêta payante douce.
+- très utile si tu veux lancer une bêta payante douce.
 
 ---
 
@@ -5270,14 +5833,12 @@ subscription\_trials
 6\. AI Financial Assistant (EPIC 6\) DONE  
 7\. Financial Projections (EPIC 7\) DONE  
 8\. Gamification (EPIC 8\) DONE  
-9\. AI Financial Coaching Assistant (EPIC 9\) DONE  
+9\. AI Financial Coaching Assistant (EPIC 9\) DONE WHITOUT 9.11 & 9.12  
 10\. Security & Access Control (EPIC 10\) WIP  
 11\. Observality & Monitoring (EPIC 11\) READY  
 12\. Admin backoffice (EPIC 12\) READY  
 13\. Plans, Entitlements & Usage Control (EPIC 13\) READY  
 14\. Billing & Payments with Stripe (EPIC 14\) READY
-
----
 
 # **Résumé backlog final**
 
@@ -5301,16 +5862,4 @@ assistant
 
 projections
 
-# gamification
-
-# 
-
-#  **Backlog complet FinMate**
-
-Epic 1–8   Core Product  
-Epic 9     AI Agent  
-Epic 10    Security  
-Epic 11    Observability & Monitoring  
-Epic 12    Admin Back-Office  
-Epic 13    Plans & Usage Control  
-Epic 14 BIlling & payment with stripe  
+gamification
