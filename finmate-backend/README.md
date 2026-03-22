@@ -1,81 +1,69 @@
 # finmate-backend
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Backend de l'application FinMate — Quarkus + Java 21 + Architecture hexagonale.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Stack
 
-## Running the application in dev mode
+- **Quarkus 3** — framework Java
+- **Hibernate ORM + Panache** — persistance
+- **SmallRye JWT** — authentification
+- **SmallRye OpenAPI** — documentation REST
+- **H2** (dev/test) / **PostgreSQL** (prod)
 
-You can run your application in dev mode that enables live coding using:
+## Démarrage local
 
-```shell script
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+L'API tourne sur http://localhost:8080.
 
-## Packaging and running the application
+- Swagger UI : http://localhost:8080/q/swagger-ui
+- Dev UI : http://localhost:8080/q/dev
 
-The application can be packaged using:
+Profil `dev` : base H2 in-memory, schéma recréé au démarrage.
 
-```shell script
-./mvnw package
+## Build
+
+```bash
+./mvnw package -DskipTests
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Produit `target/quarkus-app/quarkus-run.jar`.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+## Déploiement
 
-If you want to build an _über-jar_, execute the following command:
+Déployé automatiquement sur **Render** à chaque push sur `main` via Docker.
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+- URL : https://finmate-backend-cua2.onrender.com
+- Dockerfile : `Dockerfile`
+- Base de données : Neon (PostgreSQL managé)
+
+### Variables d'environnement requises (Render)
+
+```
+DATABASE_URL        jdbc:postgresql://<host>/neondb?sslmode=require&channel_binding=require
+DATABASE_USER       neondb_owner
+DATABASE_PASSWORD   <secret>
+AI_PROVIDER         huggingface
+HUGGINGFACE_API_KEY <secret>
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Architecture
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```
+src/main/java/com/finmate/
+  domain/
+    model/       # entités métier
+    port/        # interfaces (in/out)
+    service/     # logique métier
+  application/
+    resource/    # endpoints REST
+    dto/         # objets de transfert
+  infrastructure/
+    postgres/    # implémentations JPA
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## Modules
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/finmate-backend-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code for Hibernate ORM via the active record or the repository pattern
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and method parameters for your beans (REST, CDI, Jakarta Persistence)
-- SmallRye OpenAPI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Document your REST APIs with OpenAPI - comes with Swagger UI
-- JDBC Driver - H2 ([guide](https://quarkus.io/guides/datasource)): Connect to the H2 database via JDBC
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+`profile` · `budget` · `goals` · `education` · `risk` · `behavior` · `assistant` · `projections` · `gamification`

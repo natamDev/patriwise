@@ -1,42 +1,59 @@
 # finmate-frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Frontend de l'application FinMate — Vue.js + TypeScript + SCSS, mobile-first.
 
-## Recommended IDE Setup
+## Stack
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Vue 3** + `<script setup lang="ts">`
+- **Vite** — bundler
+- **Axios** — appels API
+- **SCSS** — styles mobile-first
 
-## Recommended Browser Setup
+## Démarrage local
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+L'app tourne sur http://localhost:5173 (ou port suivant si occupé).
 
-```sh
+### Variable d'environnement
+
+Créer un fichier `.env.local` à la racine :
+
+```
+VITE_API_URL=http://localhost:8080
+```
+
+Sans ce fichier, l'URL par défaut est `http://localhost:8080`.
+
+## Build production
+
+```bash
 npm run build
+```
+
+Le résultat est dans `dist/`.
+
+## Déploiement
+
+Déployé automatiquement sur **Netlify** à chaque push sur `main`.
+
+- URL : https://patriwise.netlify.app
+- Config : `netlify.toml`
+- Variable Netlify : `VITE_API_URL=https://finmate-backend-cua2.onrender.com`
+
+## Structure
+
+```
+src/
+  api/           # un fichier par ressource (auth, budget, goals...)
+  components/    # composants partagés
+  features/      # dossiers par feature
+  composables/
+  router/
+  types/
+  styles/
+  views/
 ```
