@@ -1,9 +1,9 @@
 # Stage 1 — build
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY finmate-backend/pom.xml .
+COPY pom.xml .
 RUN mvn dependency:go-offline -q
-COPY finmate-backend/src ./src
+COPY src ./src
 RUN mvn package -DskipTests -q
 
 # Stage 2 — runtime
